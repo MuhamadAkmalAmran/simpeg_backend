@@ -11,10 +11,118 @@ datasource db {
 }
 
 model User {
-  id Int @id @default(autoincrement())
-  name String 
-  email String @unique
-  password String
+  id       Int    @id @default(autoincrement())
+  name     String @db.VarChar(100)
+  email    String @unique @db.VarChar(100)
+  password String @db.VarChar(100)
+  img_url  String? @db.VarChar(100)
 
   @@map("users")
+}
+
+model Profile {
+  id                 Int      @id @default(autoincrement())
+  gelar_depan        String   @db.VarChar(100)
+  gelar_belakang     String   @db.VarChar(100)
+  tempat_lahir       String   @db.VarChar(100)
+  tanggal_lahir      DateTime @db.Date
+  jenis_kelamin      String   @db.VarChar(100)
+  Agama              String   @db.VarChar(100)
+  golongan_darah     String   @db.VarChar(100)
+  status_kepegawaian String   @db.VarChar(100)
+  nomor_hp           String   @db.VarChar(100)
+  alamat             String   @db.VarChar(100)
+  kelurahan          String   @db.VarChar(100)
+  kecamatan          String   @db.VarChar(100)
+  kota_kabupaten     String   @db.VarChar(100)
+  provinsi           String   @db.VarChar(100)
+
+  @@map("profiles")
+}
+
+model Training {
+  id               Int    @id @default(autoincrement())
+  nama             String @db.VarChar(100)
+  penyelenggara    String @db.VarChar(100)
+  jam_pembelajaran String @db.VarChar(100)
+  tahun_diklat     String @db.VarChar(4)
+  sertif_url       String? @db.VarChar(100)
+
+  @@map("trainings")
+}
+
+model Education {
+  id          Int    @id @default(autoincrement())
+  jenjang     String @db.VarChar(100)
+  instansi    String @db.VarChar(100)
+  jurusan     String @db.VarChar(100)
+  tahun_lulus String @db.VarChar(4)
+  ijazah_url  String? @db.VarChar(100)
+
+  @@map("educations")
+}
+
+model Position {
+  id         Int      @id @default(autoincrement())
+  nama       String   @db.VarChar(100)
+  no_SK      Int
+  tgl_sk     DateTime @db.Date
+  tmt        DateTime @db.Date
+  gaji_pokok Int
+  sk_url     String?   @db.VarChar(100)
+
+  @@map("positions")
+}
+
+model Family {
+  id            Int      @id @default(autoincrement())
+  nama          String   @db.VarChar(100)
+  nik           Int
+  hubungan_kel  String   @db.VarChar(100)
+  tgl_lahir     DateTime @db.Date
+  jenis_kelamin String   @db.VarChar(100)
+  agama         String   @db.VarChar(100)
+
+  @@map("families")
+}
+
+model Achievement {
+  id            Int    @id @default(autoincrement())
+  nama          String @db.VarChar(100)
+  tingkatan     String @db.VarChar(100)
+  tahun         String @db.VarChar(4)
+  penyelenggara String @db.VarChar(100)
+  sertif_url    String? @db.VarChar(100)
+
+  @@map("achievements")
+}
+
+model Performance {
+  id          Int    @id @default(autoincrement())
+  nilai_kerja Int
+  predikat    String @db.VarChar(100)
+  dokumen_url String? @db.VarChar(100)
+
+  @@map("performances")
+}
+
+model Title {
+  id               Int      @id @default(autoincrement())
+  jabatan          String   @db.VarChar(100)
+  unit_kerja       String   @db.VarChar(100)
+  tmt              DateTime @db.Date
+  tanggal_berakhir DateTime @db.Date
+  no_sk            Int
+  tgl_sk           DateTime @db.Date
+  sertif_url       String?   @db.VarChar(100)
+
+  @@map("titles")
+}
+
+model Personal_Document {
+  id            Int    @id @default(autoincrement())
+  jenis_dokumen String @db.VarChar(100)
+  file_url      String? @db.VarChar(100)
+
+  @@map("personal_documents")
 }
