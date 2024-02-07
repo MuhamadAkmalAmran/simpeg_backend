@@ -7,9 +7,13 @@ const getAllUsers = async () => {
 };
 
 const createUser = async (userData) => {
+  if (!userData.name || !userData.email || !userData.password) {
+    throw new Error('Name, email, and password are required.');
+  }
+
   const existingUserByEmail = await findUserByEmail(userData.email);
   if (existingUserByEmail) {
-    throw new Error('Email is already exists');
+    throw new Error('Email is already exists.');
   }
 
   if (userData.password.length < 8) {
