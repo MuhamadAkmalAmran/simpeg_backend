@@ -1,5 +1,6 @@
 import express from 'express';
-import { getAllUsers, createUser } from './user.service.js';
+import { getAllUsers, createUser, loginUser } from './user.service.js';
+import accessToken from '../utils/jwt.js';
 
 const router = express.Router();
 
@@ -19,6 +20,33 @@ router.post('/register', async (req, res) => {
     res.status(201).json({
       data: user,
       message: 'User created successfull',
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: error.message,
+    });
+  }
+});
+
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await loginUser(email, password);
+
+    const token = accessToken({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    });
+
+    res.status(200).json({
+      data: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      },
+      token,
+      message: 'Login successfull',
     });
   } catch (error) {
     res.status(400).json({

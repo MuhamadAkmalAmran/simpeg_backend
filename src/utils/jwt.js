@@ -1,7 +1,6 @@
-// import { sign, verify } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
-// const accessToken = (payload) => {
-//   sign(payload, process.env.ACCESS_TOKEN, { expiresIn: 1 * 24 * 60 * 60 * 1000 });
-// };
+const secret = process.env.ACCESS_TOKEN;
+const accessToken = (userData) => jwt.sign(userData, secret, { expiresIn: '1d' });
 
-// export { accessToken, verifyToken };
+export default accessToken;

@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 import { findAllUsers, findUserByEmail, insertUser } from './user.repository.js';
 
 const getAllUsers = async () => {
@@ -25,4 +26,27 @@ const createUser = async (userData) => {
   return user;
 };
 
-export { getAllUsers, createUser };
+const loginUser = async (email, password) => {
+  const user = await findUserByEmail(email, password);
+
+  if (!user) {
+    throw new Error('User not found.');
+  }
+
+  if (!user.password) {
+    throw new Error('Password is invalid.');
+  }
+
+  const comparePassword = await bcrypt.compare(password, user.password);
+
+  if (comparePassword) {
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    };
+  }
+  throw new Error('Password is invalid.');
+};
+
+export { getAllUsers, createUser, loginUser };

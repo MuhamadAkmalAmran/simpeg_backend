@@ -1,8 +1,10 @@
 import express, { json, urlencoded } from 'express';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
+import dotenv from 'dotenv';
 import userController from './src/user/user.controller.js';
 
+dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
