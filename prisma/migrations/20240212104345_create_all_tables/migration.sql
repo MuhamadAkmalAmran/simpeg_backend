@@ -1,3 +1,15 @@
+-- CreateEnum
+CREATE TYPE "Relationship" AS ENUM ('Anak', 'Istri', 'Suami');
+
+-- CreateEnum
+CREATE TYPE "Gender" AS ENUM ('Laki-Laki', 'Perempuan');
+
+-- CreateEnum
+CREATE TYPE "Religion" AS ENUM ('Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha', 'Konghucu');
+
+-- CreateEnum
+CREATE TYPE "Blood" AS ENUM ('A', 'B', 'O', 'AB');
+
 -- CreateTable
 CREATE TABLE "users" (
     "id" SERIAL NOT NULL,
@@ -16,9 +28,9 @@ CREATE TABLE "profiles" (
     "gelar_belakang" VARCHAR(100) NOT NULL,
     "tempat_lahir" VARCHAR(100) NOT NULL,
     "tanggal_lahir" DATE NOT NULL,
-    "jenis_kelamin" VARCHAR(100) NOT NULL,
-    "Agama" VARCHAR(100) NOT NULL,
-    "golongan_darah" VARCHAR(100) NOT NULL,
+    "jenis_kelamin" "Gender" NOT NULL,
+    "Agama" "Religion" NOT NULL,
+    "golongan_darah" "Blood" NOT NULL,
     "status_kepegawaian" VARCHAR(100) NOT NULL,
     "nomor_hp" VARCHAR(100) NOT NULL,
     "alamat" VARCHAR(100) NOT NULL,
@@ -72,10 +84,10 @@ CREATE TABLE "families" (
     "id" SERIAL NOT NULL,
     "nama" VARCHAR(100) NOT NULL,
     "nik" INTEGER NOT NULL,
-    "hubungan_kel" VARCHAR(100) NOT NULL,
+    "hubungan_kel" "Relationship" NOT NULL,
     "tgl_lahir" DATE NOT NULL,
-    "jenis_kelamin" VARCHAR(100) NOT NULL,
-    "agama" VARCHAR(100) NOT NULL,
+    "jenis_kelamin" "Gender" NOT NULL,
+    "agama" "Religion" NOT NULL,
 
     CONSTRAINT "families_pkey" PRIMARY KEY ("id")
 );
