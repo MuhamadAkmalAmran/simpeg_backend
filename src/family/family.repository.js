@@ -49,4 +49,13 @@ const editFamily = async (id, familyData) => {
   return family;
 };
 
-export { findAllFamilies, insertFamily, editFamily, findFamilyById };
+const deleteFamily = async (id) => {
+ const family = await prisma.family.delete({
+  where: {
+    id,
+  }
+ })
+ return family;
+}
+
+export { findAllFamilies, insertFamily, editFamily, findFamilyById, deleteFamily };

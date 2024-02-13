@@ -1,4 +1,4 @@
-import { editFamily, findAllFamilies, findFamilyById, insertFamily } from './family.repository.js'
+import { deleteFamily, editFamily, findAllFamilies, findFamilyById, insertFamily } from './family.repository.js'
 
 const getAllFamilies = async () => {
   const families = await findAllFamilies();
@@ -7,8 +7,6 @@ const getAllFamilies = async () => {
 }
 
 const createFamily = async (familyData) => {
-
-
   if (!familyData.nama || !familyData.nik || !familyData.hubungan_kel || !familyData.tgl_lahir || !familyData.jenis_kelamin || !familyData.agama) {
     throw new Error('Fields are required.');
   }
@@ -30,4 +28,10 @@ const updateFamily = async (id, familyData) => {
   return family;
 }
 
-export { getAllFamilies, createFamily, updateFamily };
+const deleteFamilyById = async (id) => {
+  const family = await deleteFamily(id);
+
+  return family;
+}
+
+export { getAllFamilies, createFamily, updateFamily, deleteFamilyById };

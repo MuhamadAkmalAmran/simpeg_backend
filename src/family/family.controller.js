@@ -1,5 +1,5 @@
 import express from 'express';
-import { createFamily, getAllFamilies, updateFamily } from './family.service.js';
+import { createFamily, deleteFamilyById, getAllFamilies, updateFamily } from './family.service.js';
 
 const router = express.Router();
 
@@ -40,6 +40,21 @@ router.patch('/families/:id', async (req, res) => {
       message: error.message,
     });
   };
+});
+
+router.delete('/families/:id', async (req, res) => {
+  try {
+    const familyId = req.params.id;
+    const Family = await deleteFamilyById(parseInt(familyId));
+
+    res.status(200).json({
+      message: 'Family deleted successfully',
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: error.message
+    });
+  }
 });
 
 export default router;
