@@ -11,6 +11,10 @@ const createFamily = async (familyData) => {
     throw new Error('Fields are required.');
   }
 
+  if (familyData.nik.length < 16 || familyData.nik.length > 16) {
+    throw new Error('nik must be at least 16 characters');
+  }
+
   const family = await insertFamily(familyData);
 
   return family;
