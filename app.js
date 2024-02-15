@@ -4,6 +4,7 @@ import logger from 'morgan';
 import dotenv from 'dotenv';
 import userController from './src/user/user.controller.js';
 import familyController from './src/family/family.controller.js';
+import positionController from './src/position/position.controller.js';
 
 dotenv.config();
 const app = express();
@@ -20,6 +21,7 @@ app.get('/', (req, res) => {
 
 app.use('/api', userController);
 app.use('/api', familyController);
+app.use('/api', positionController);
 
 app.listen(PORT, () => {
   console.log(`Express server listening on localhost: ${PORT}`);
