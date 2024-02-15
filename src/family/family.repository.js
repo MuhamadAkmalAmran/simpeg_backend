@@ -16,7 +16,7 @@ const insertFamily = async (familyData) => {
       jenis_kelamin: familyData.jenis_kelamin,
       agama: familyData.agama,
       hubungan_kel: familyData.hubungan_kel,
-    }
+    },
   });
 
   return family;
@@ -26,11 +26,11 @@ const findFamilyById = async (id) => {
   const family = await prisma.family.findUnique({
     where: {
       id,
-    }
+    },
   });
 
   return family;
-}
+};
 
 const editFamily = async (id, familyData) => {
   const family = await prisma.family.update({
@@ -45,19 +45,25 @@ const editFamily = async (id, familyData) => {
       jenis_kelamin: familyData.jenis_kelamin,
       agama: familyData.agama,
       hubungan_kel: familyData.hubungan_kel,
-    }
-  })
+    },
+  });
 
   return family;
 };
 
 const deleteFamily = async (id) => {
- const family = await prisma.family.delete({
-  where: {
-    id,
-  }
- })
- return family;
-}
+  const family = await prisma.family.delete({
+    where: {
+      id,
+    },
+  });
+  return family;
+};
 
-export { findAllFamilies, insertFamily, editFamily, findFamilyById, deleteFamily };
+export {
+  findAllFamilies,
+  insertFamily,
+  editFamily,
+  findFamilyById,
+  deleteFamily,
+};

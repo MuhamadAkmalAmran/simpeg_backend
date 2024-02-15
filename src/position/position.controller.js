@@ -1,5 +1,10 @@
 import express from 'express';
-import { createPosition, deletePosition, getAllPositions, updatePosition } from './position.service.js';
+import {
+  createPosition,
+  deletePosition,
+  getAllPositions,
+  updatePosition,
+} from './position.service.js';
 
 const router = express.Router();
 
@@ -22,7 +27,7 @@ router.post('/positions', async (req, res) => {
 
     res.status(201).json({
       data: {
-        position
+        position,
       },
       message: 'Position created successfully.',
     });
@@ -54,7 +59,8 @@ router.delete('/positions/:id', async (req, res) => {
   try {
     const positionById = req.params.id;
 
-    const position = await deletePosition(positionById);
+    await deletePosition(positionById);
+
     res.status(200).json({
       message: 'Position deleted successfully.',
     });

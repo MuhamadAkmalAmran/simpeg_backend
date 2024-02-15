@@ -15,7 +15,7 @@ const insertPosition = async (positionData) => {
       gaji_pokok: positionData.gaji_pokok,
       jenis_sk: positionData.jenis_sk,
       sk_url: positionData.sk_url,
-    }
+    },
   });
 
   return position;
@@ -57,6 +57,12 @@ const deletePositionById = async (id) => {
   });
 
   return position;
-}
+};
 
-export { findAllPositions, insertPosition, findPositionById, updatePositionById, deletePositionById};
+export {
+  findAllPositions,
+  insertPosition,
+  findPositionById,
+  updatePositionById,
+  deletePositionById,
+};
