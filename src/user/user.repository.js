@@ -12,7 +12,8 @@ const insertUser = async (userData) => {
 
   const user = await prisma.user.create({
     data: {
-      name: userData.name,
+      nama: userData.nama,
+      username: userData.username,
       email: userData.email,
       password: hashPassword,
       img_url: userData.img_url,
@@ -22,14 +23,14 @@ const insertUser = async (userData) => {
   return user;
 };
 
-const findUserByEmail = async (email) => {
+const findUserByUsername = async (username) => {
   const userEmail = await prisma.user.findUnique({
     where: {
-      email,
+      username,
     },
   });
 
   return userEmail;
 };
 
-export { findAllUsers, insertUser, findUserByEmail };
+export { findAllUsers, insertUser, findUserByUsername };

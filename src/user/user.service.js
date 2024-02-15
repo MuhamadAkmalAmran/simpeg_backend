@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import { findAllUsers, findUserByEmail, insertUser } from './user.repository.js';
+import { findAllUsers, findUserByUsername, insertUser } from './user.repository.js';
 
 const getAllUsers = async () => {
   const users = await findAllUsers();
@@ -8,13 +8,13 @@ const getAllUsers = async () => {
 };
 
 const createUser = async (userData) => {
-  if (!userData.name || !userData.email || !userData.password) {
-    throw new Error('Name, email, and password are required.');
+  if (!userData.nama || !userData.username || !userData.email || !userData.password) {
+    throw new Error('Nama, username, email, and password are required.');
   }
 
-  const existingUserByEmail = await findUserByEmail(userData.email);
-  if (existingUserByEmail) {
-    throw new Error('Email is already exists.');
+  const existingUserByUsername = await findUserByUsername(userData.username);
+  if (existingUserByUsername) {
+    throw new Error('Username is already exists.');
   }
 
   if (userData.password.length < 8) {
@@ -26,8 +26,8 @@ const createUser = async (userData) => {
   return user;
 };
 
-const loginUser = async (email, password) => {
-  const user = await findUserByEmail(email, password);
+const loginUser = async (username, password) => {
+  const user = await findUserByUsername(username, password);
 
   if (!user) {
     throw new Error('User not found.');
@@ -42,7 +42,8 @@ const loginUser = async (email, password) => {
   if (comparePassword) {
     return {
       id: user.id,
-      name: user.name,
+      nama: user.nama,
+      username: user.username,
       email: user.email,
     };
   }
