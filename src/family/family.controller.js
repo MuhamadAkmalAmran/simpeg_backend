@@ -30,7 +30,7 @@ router.patch('/families/:id', async (req, res) => {
     const familyId = req.params.id;
     const familyData = req.body;
 
-    const family = await updateFamily(parseInt(familyId), familyData);
+    const family = await updateFamily(familyId, familyData);
     res.status(200).json({
       data: family,
       message: 'Family updated successfully',
@@ -45,7 +45,7 @@ router.patch('/families/:id', async (req, res) => {
 router.delete('/families/:id', async (req, res) => {
   try {
     const familyId = req.params.id;
-    const Family = await deleteFamilyById(parseInt(familyId));
+    const Family = await deleteFamilyById(familyId);
 
     res.status(200).json({
       message: 'Family deleted successfully',

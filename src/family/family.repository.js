@@ -9,12 +9,13 @@ const findAllFamilies = async () => {
 const insertFamily = async (familyData) => {
   const family = await prisma.family.create({
     data: {
-      nama: familyData.nama,
       nik: familyData.nik,
-      hubungan_kel: familyData.hubungan_kel,
-      tgl_lahir: familyData.tgl_lahir,
+      nama: familyData.nama,
+      tempat: familyData.tempat,
+      tanggal_lahir: familyData.tanggal_lahir,
       jenis_kelamin: familyData.jenis_kelamin,
       agama: familyData.agama,
+      hubungan_kel: familyData.hubungan_kel,
     }
   });
 
@@ -34,15 +35,16 @@ const findFamilyById = async (id) => {
 const editFamily = async (id, familyData) => {
   const family = await prisma.family.update({
     where: {
-      id: parseInt(id),
+      id,
     },
     data: {
-      nama: familyData.nama,
       nik: familyData.nik,
-      hubungan_kel: familyData.hubungan_kel,
-      tgl_lahir: familyData.tgl_lahir,
+      nama: familyData.nama,
+      tempat: familyData.tempat,
+      tanggal_lahir: familyData.tanggal_lahir,
       jenis_kelamin: familyData.jenis_kelamin,
       agama: familyData.agama,
+      hubungan_kel: familyData.hubungan_kel,
     }
   })
 

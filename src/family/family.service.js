@@ -7,7 +7,7 @@ const getAllFamilies = async () => {
 }
 
 const createFamily = async (familyData) => {
-  if (!familyData.nama || !familyData.nik || !familyData.hubungan_kel || !familyData.tgl_lahir || !familyData.jenis_kelamin || !familyData.agama) {
+  if (!familyData.nik || !familyData.nama || !familyData.tempat || !familyData.tanggal_lahir || !familyData.jenis_kelamin || !familyData.agama || !familyData.hubungan_kel) {
     throw new Error('Fields are required.');
   }
 
