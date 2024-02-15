@@ -1,5 +1,5 @@
 import express from 'express';
-import { createPosition, getAllPositions, updatePosition } from './position.service.js';
+import { createPosition, deletePosition, getAllPositions, updatePosition } from './position.service.js';
 
 const router = express.Router();
 
@@ -42,6 +42,21 @@ router.patch('/positions/:id', async (req, res) => {
     res.status(200).json({
       data: position,
       message: 'Position updated successfully.',
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+});
+
+router.delete('/positions/:id', async (req, res) => {
+  try {
+    const positionById = req.params.id;
+
+    const position = await deletePosition(positionById);
+    res.status(200).json({
+      message: 'Position deleted successfully.',
     });
   } catch (error) {
     res.status(500).json({

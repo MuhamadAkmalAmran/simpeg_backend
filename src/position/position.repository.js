@@ -49,4 +49,14 @@ const updatePositionById = async (id, positionData) => {
   return position;
 };
 
-export { findAllPositions, insertPosition, findPositionById, updatePositionById };
+const deletePositionById = async (id) => {
+  const position = await prisma.position.delete({
+    where: {
+      id,
+    },
+  });
+
+  return position;
+}
+
+export { findAllPositions, insertPosition, findPositionById, updatePositionById, deletePositionById};

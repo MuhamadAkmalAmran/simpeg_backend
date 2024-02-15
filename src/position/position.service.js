@@ -1,4 +1,4 @@
-import { findAllPositions, findPositionById, insertPosition, updatePositionById } from './position.repository.js';
+import { deletePositionById, findAllPositions, findPositionById, insertPosition, updatePositionById } from './position.repository.js';
 
 const getAllPositions = async () => {
   const positions = await findAllPositions();
@@ -29,4 +29,16 @@ const updatePosition = async (id, positionData) => {
   return position;
 };
 
-export { getAllPositions, createPosition, updatePosition };
+const deletePosition = async (id) => {
+  const positionById = await findPositionById(id);
+
+  if (!positionById) {
+    throw new Error('Position not found.');
+  }
+
+  const position = await deletePositionById(id);
+
+  return position;
+}
+
+export { getAllPositions, createPosition, updatePosition, deletePosition };
