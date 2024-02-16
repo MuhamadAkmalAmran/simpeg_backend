@@ -9,6 +9,7 @@ import educationController from './src/education/education.controller.js';
 import trainingController from './src/training/training.controller.js';
 import titleController from './src/title/title.controller.js';
 import achievementController from './src/achievement/achievement.controller.js';
+import performanceController from './src/performance/performance.controller.js';
 
 dotenv.config();
 const app = express();
@@ -30,6 +31,7 @@ app.use('/api', educationController);
 app.use('/api', trainingController);
 app.use('/api', titleController);
 app.use('/api', achievementController);
+app.use('/api', performanceController);
 
 app.listen(PORT, () => {
   console.log(`Express server listening on localhost: ${PORT}`);
