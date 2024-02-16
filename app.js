@@ -6,6 +6,7 @@ import userController from './src/user/user.controller.js';
 import familyController from './src/family/family.controller.js';
 import positionController from './src/position/position.controller.js';
 import educationController from './src/education/education.controller.js';
+import trainingController from './src/training/training.controller.js';
 
 dotenv.config();
 const app = express();
@@ -24,6 +25,7 @@ app.use('/api', userController);
 app.use('/api', familyController);
 app.use('/api', positionController);
 app.use('/api', educationController);
+app.use('/api', trainingController);
 
 app.listen(PORT, () => {
   console.log(`Express server listening on localhost: ${PORT}`);
