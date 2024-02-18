@@ -10,6 +10,7 @@ import trainingController from './src/training/training.controller.js';
 import titleController from './src/title/title.controller.js';
 import achievementController from './src/achievement/achievement.controller.js';
 import performanceController from './src/performance/performance.controller.js';
+import errorMiddleware from './src/middleware/error-middleware.js';
 
 dotenv.config();
 const app = express();
@@ -32,6 +33,7 @@ app.use('/api', trainingController);
 app.use('/api', titleController);
 app.use('/api', achievementController);
 app.use('/api', performanceController);
+app.use(errorMiddleware);
 
 app.listen(PORT, () => {
   console.log(`Express server listening on localhost: ${PORT}`);
