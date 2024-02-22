@@ -1,10 +1,14 @@
 import express from 'express';
-import { getAllUsers, createUser, loginUser } from './user.service.js';
-import accessToken from '../utils/jwt.js';
+import {
+  getAllUsers,
+  createUser, loginUser,
+  logoutUser,
+} from './user.service.js';
+import { authMiddleware } from '../middleware/authentication.middleware.js';
 
 const router = express.Router();
 
-router.get('/users', async (req, res) => {
+router.get('/users', authMiddleware, async (req, res) => {
   const users = await getAllUsers();
 
   res.status(200).json({
@@ -12,46 +16,46 @@ router.get('/users', async (req, res) => {
   });
 });
 
-router.post('/register', async (req, res) => {
+router.post('/register', async (req, res, next) => {
   try {
     const userData = req.body;
     const user = await createUser(userData);
 
     res.status(201).json({
-      data: user,
+      status: false,
       message: 'User created successfull',
+      data: user,
     });
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    next(error);
   }
 });
 
-router.post('/login', async (req, res) => {
+router.post('/login', async (req, res, next) => {
   try {
-    const { username, password } = req.body;
-    const user = await loginUser(username, password);
-
-    const token = accessToken({
-      nama: user.nama,
-      username: user.username,
-      email: user.email,
-    });
+    const userData = req.body;
+    const user = await loginUser(userData);
 
     res.status(200).json({
-      data: {
-        nama: user.nama,
-        username: user.username,
-        email: user.email,
-      },
-      token,
+      status: false,
       message: 'Login successfull',
+      token: user,
     });
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
+    next(error);
+  }
+});
+
+router.delete('/logout', authMiddleware, async (req, res, next) => {
+  try {
+    const { username } = req.user;
+    await logoutUser(username);
+    res.status(200).json({
+      status: false,
+      message: 'Logout successfull',
     });
+  } catch (error) {
+    next(error);
   }
 });
 

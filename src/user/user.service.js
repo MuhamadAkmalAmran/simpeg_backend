@@ -1,5 +1,13 @@
 import bcrypt from 'bcrypt';
-import { findAllUsers, findUserByUsername, insertUser } from './user.repository.js';
+import {
+  deleteToken,
+  findAllUsers,
+  findUserByUsername, insertUser,
+  updateTokenUserByUsername,
+} from './user.repository.js';
+import validate from '../validation/validation.js';
+import { registerValidation, loginValidation, getUserNameValidation } from '../validation/user-validation.js';
+import ResponseError from '../utils/response-error.js';
 
 const getAllUsers = async () => {
   const users = await findAllUsers();
@@ -8,46 +16,42 @@ const getAllUsers = async () => {
 };
 
 const createUser = async (userData) => {
-  if (!userData.nama || !userData.username || !userData.email || !userData.password) {
-    throw new Error('Nama, username, email, and password are required.');
-  }
-
   const existingUserByUsername = await findUserByUsername(userData.username);
   if (existingUserByUsername) {
-    throw new Error('Username is already exists.');
+    throw new ResponseError(400, 'Username is already exists.');
   }
-
-  if (userData.password.length < 8) {
-    throw new Error('Password length should be more than 8 characters.');
-  }
-
-  const user = await insertUser(userData);
+  const userValidation = validate(registerValidation, userData);
+  const user = await insertUser(userValidation);
 
   return user;
 };
 
-const loginUser = async (username, password) => {
-  const user = await findUserByUsername(username, password);
+const loginUser = async (userData) => {
+  const userValidation = await validate(loginValidation, userData);
+  const user = await findUserByUsername(userValidation);
 
   if (!user) {
-    throw new Error('User not found.');
+    throw new ResponseError(401, 'User does not exist');
   }
 
-  if (!user.password) {
-    throw new Error('Password is invalid.');
+  const comparePassword = await bcrypt.compare(userValidation.password, user.password);
+  if (!comparePassword) {
+    throw new ResponseError(401, 'Username or Password wrong.');
   }
 
-  const comparePassword = await bcrypt.compare(password, user.password);
+  const updateToken = await updateTokenUserByUsername(user, userValidation.username);
 
-  if (comparePassword) {
-    return {
-      id: user.id,
-      nama: user.nama,
-      username: user.username,
-      email: user.email,
-    };
-  }
-  throw new Error('Password is invalid.');
+  return updateToken;
 };
 
-export { getAllUsers, createUser, loginUser };
+const logoutUser = async (username) => {
+  const userValidation = await validate(getUserNameValidation, username);
+  const user = await deleteToken(userValidation);
+
+  return user;
+};
+
+export {
+  getAllUsers, createUser, loginUser,
+  logoutUser,
+};
