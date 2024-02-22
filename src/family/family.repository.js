@@ -1,12 +1,18 @@
+// import { format, formatISO, parse } from 'date-fns';
 import prisma from '../db/database.js';
 
-const findAllFamilies = async () => {
-  const families = await prisma.family.findMany();
+const findAllFamiliesByUser = async (userId) => {
+  const families = await prisma.family.findMany({
+    where: {
+      user_id: userId,
+    },
+  });
 
   return families;
 };
 
-const insertFamily = async (familyData) => {
+const insertFamily = async (familyData, userId) => {
+  // const tanggalLahir = parse(familyData.tanggal_lahir, 'dd-MM-yyyy');
   const family = await prisma.family.create({
     data: {
       nik: familyData.nik,
@@ -16,26 +22,29 @@ const insertFamily = async (familyData) => {
       jenis_kelamin: familyData.jenis_kelamin,
       agama: familyData.agama,
       hubungan_kel: familyData.hubungan_kel,
+      user_id: userId,
     },
   });
 
   return family;
 };
 
-const findFamilyById = async (id) => {
+const findFamilyById = async (id, userId) => {
   const family = await prisma.family.findUnique({
     where: {
       id,
+      user_id: userId,
     },
   });
 
   return family;
 };
 
-const editFamily = async (id, familyData) => {
+const editFamily = async (id, familyData, userId) => {
   const family = await prisma.family.update({
     where: {
       id,
+      user_id: userId,
     },
     data: {
       nik: familyData.nik,
@@ -51,17 +60,18 @@ const editFamily = async (id, familyData) => {
   return family;
 };
 
-const deleteFamily = async (id) => {
+const deleteFamily = async (id, userId) => {
   const family = await prisma.family.delete({
     where: {
       id,
+      user_id: userId,
     },
   });
   return family;
 };
 
 export {
-  findAllFamilies,
+  findAllFamiliesByUser,
   insertFamily,
   editFamily,
   findFamilyById,

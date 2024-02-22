@@ -1,50 +1,55 @@
+import ResponseError from '../utils/response-error.js';
+import {
+  createFamilyValidation,
+  getFamilyValidation,
+} from '../validation/family-validation.js';
+import validate from '../validation/validation.js';
 import {
   deleteFamily,
   editFamily,
-  findAllFamilies,
+  findAllFamiliesByUser,
   findFamilyById,
   insertFamily,
 } from './family.repository.js';
 
-const getAllFamilies = async () => {
-  const families = await findAllFamilies();
+const getAllFamilies = async (userId) => {
+  const families = await findAllFamiliesByUser(userId);
 
   return families;
 };
 
-const createFamily = async (familyData) => {
-  if (!familyData.nik
-    || !familyData.nama
-    || !familyData.tempat
-    || !familyData.tanggal_lahir
-    || !familyData.jenis_kelamin
-    || !familyData.agama || !familyData.hubungan_kel) {
-    throw new Error('Fields are required.');
-  }
+const createFamily = async (familyData, userId) => {
+  const familyValidation = validate(createFamilyValidation, familyData);
 
-  if (familyData.nik.length < 16 || familyData.nik.length > 16) {
-    throw new Error('nik must be at least 16 characters');
-  }
-
-  const family = await insertFamily(familyData);
+  const family = await insertFamily(familyValidation, userId);
 
   return family;
 };
 
-const updateFamily = async (id, familyData) => {
-  const familyById = await findFamilyById(id);
+const updateFamily = async (id, familyData, userId) => {
+  const familyValidation = await validate(getFamilyValidation, id);
+  const familyById = await findFamilyById(familyValidation, userId);
 
   if (!familyById) {
-    throw new Error('Family not found.');
+    throw new ResponseError(404, 'Family not found.');
   }
 
-  const family = await editFamily(id, familyData);
+  const family = await editFamily(familyValidation, familyData);
 
   return family;
 };
 
-const deleteFamilyById = async (id) => {
-  const family = await deleteFamily(id);
+const deleteFamilyById = async (id, userId) => {
+  const familyValidation = await validate(getFamilyValidation, id);
+  const familyById = await findFamilyById(familyValidation);
+  if (!familyById) {
+    throw new ResponseError(404, 'Family not found.');
+  }
+  const family = await deleteFamily(familyValidation, userId);
+
+  if (!family) {
+    throw new ResponseError(401, 'Unathorized');
+  }
 
   return family;
 };
