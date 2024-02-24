@@ -1,56 +1,58 @@
+import ResponseError from '../utils/response-error.js';
+import { createTitleValidation, getTitleValidation } from '../validation/title-validation.js';
+import validate from '../validation/validation.js';
 import {
   deleteTitle,
   editTitle,
-  findAllTitles,
+  findAllTitlesByUser,
   findTitleById,
   insertTitle,
 } from './title.repository.js';
 
-const getAllTitles = async () => {
-  const titles = await findAllTitles();
+const getAllTitles = async (userId) => {
+  const titles = await findAllTitlesByUser(userId);
 
   return titles;
 };
 
-const getTitleById = async (id) => {
-  const title = await findTitleById(id);
+const getTitleById = async (id, userId) => {
+  const title = await findTitleById(id, userId);
   if (!title) {
-    throw new Error('Title not found.');
+    throw new ResponseError(404, 'Title not found.');
   }
 
   return title;
 };
 
-const createTitle = async (titleData) => {
-  if (!titleData.jabatan || !titleData.unit_kerja || !titleData.tmt
-    || !titleData.tanggal_berakhir || !titleData.no_sk || !titleData.tanggal_sk) {
-    throw new Error('Fields are required');
-  }
-  const title = await insertTitle(titleData);
+const createTitle = async (titleData, userId) => {
+  const titleValidation = await validate(createTitleValidation, titleData);
+  const title = await insertTitle(titleValidation, userId);
 
   return title;
 };
 
-const updateTitle = async (id, titleData) => {
-  const titleById = await findTitleById(id);
+const updateTitle = async (id, titleData, userId) => {
+  const titleValidation = await validate(getTitleValidation, id);
+  const titleById = await findTitleById(id, userId);
 
   if (!titleById) {
-    throw new Error('Title not found.');
+    throw new ResponseError(404, 'Title not found.');
   }
 
-  const title = await editTitle(id, titleData);
+  const title = await editTitle(titleValidation, titleData);
 
   return title;
 };
 
-const deleteTitleById = async (id) => {
-  const titleById = await findTitleById(id);
+const deleteTitleById = async (id, userId) => {
+  const titleValidation = await validate(getTitleValidation, id);
+  const titleById = await getTitleById(titleValidation, userId);
 
   if (!titleById) {
-    throw new Error('Title not found.');
+    throw new ResponseError(404, 'Title not found.');
   }
 
-  const title = await deleteTitle(id);
+  const title = await deleteTitle(titleValidation);
 
   return title;
 };

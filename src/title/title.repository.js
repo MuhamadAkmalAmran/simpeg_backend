@@ -1,21 +1,26 @@
 import prisma from '../db/database.js';
 
-const findAllTitles = async () => {
-  const titles = await prisma.title.findMany();
+const findAllTitlesByUser = async (userId) => {
+  const titles = await prisma.title.findMany({
+    where: {
+      user_id: userId,
+    },
+  });
 
   return titles;
 };
 
-const findTitleById = async (id) => {
+const findTitleById = async (id, userId) => {
   const title = await prisma.title.findUnique({
     where: {
       id,
+      user_id: userId,
     },
   });
   return title;
 };
 
-const insertTitle = async (titleData) => {
+const insertTitle = async (titleData, userId) => {
   const title = await prisma.title.create({
     data: {
       jabatan: titleData.jabatan,
@@ -24,15 +29,17 @@ const insertTitle = async (titleData) => {
       tanggal_berakhir: titleData.tanggal_berakhir,
       no_sk: titleData.no_sk,
       tanggal_sk: titleData.tanggal_sk,
+      user_id: userId,
     },
   });
   return title;
 };
 
-const editTitle = async (id, titleData) => {
+const editTitle = async (id, titleData, userId) => {
   const title = await prisma.title.update({
     where: {
       id,
+      user_id: userId,
     },
     data: {
       jabatan: titleData.jabatan,
@@ -46,17 +53,18 @@ const editTitle = async (id, titleData) => {
   return title;
 };
 
-const deleteTitle = async (id) => {
+const deleteTitle = async (id, userId) => {
   const title = await prisma.title.delete({
     where: {
       id,
+      user_id: userId,
     },
   });
   return title;
 };
 
 export {
-  findAllTitles,
+  findAllTitlesByUser,
   findTitleById,
   insertTitle,
   editTitle,
