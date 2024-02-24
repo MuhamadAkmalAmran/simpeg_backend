@@ -1,16 +1,16 @@
-import { createPerformanceValidation, updatePerformanceValidation } from '../performance-validation.js';
+import { createPerformanceValidation, updatePerformanceValidation } from '../validation/performance-validation.js';
 import ResponseError from '../utils/response-error.js';
-import validate from '../validation.js';
+import validate from '../validation/validation.js';
 import {
   deletePerformance,
   editPerformance,
-  findAllPerformances,
+  findAllPerformancesByUser,
   findPerformanceById,
   insertPerformance,
 } from './performance.repository.js';
 
-const getAllPerformances = async () => {
-  const performances = await findAllPerformances();
+const getAllPerformances = async (userId) => {
+  const performances = await findAllPerformancesByUser(userId);
   return performances;
 };
 
@@ -19,9 +19,9 @@ const getPerformanceById = async (id) => {
   return performance;
 };
 
-const createPerformance = async (performanceData) => {
+const createPerformance = async (performanceData, userId) => {
   const performanceValidation = validate(createPerformanceValidation, performanceData);
-  const performance = await insertPerformance(performanceValidation);
+  const performance = await insertPerformance(performanceValidation, userId);
   return performance;
 };
 

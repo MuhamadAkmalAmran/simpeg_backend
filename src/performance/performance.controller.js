@@ -8,18 +8,28 @@ import {
 
 const router = express.Router();
 
-router.get('/performances', async (req, res) => {
-  const performances = await getAllPerformances();
-  res.status(200).json(performances);
+router.get('/performances', async (req, res, next) => {
+  try {
+    const { id } = req.user;
+    const performances = await getAllPerformances(id);
+    res.status(200).json({
+      status: false,
+      performances,
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.post('/performances', async (req, res, next) => {
   try {
+    const { id } = req.user;
     const performanceData = req.body;
-    const performance = await createPerformance(performanceData);
+    const performance = await createPerformance(performanceData, id);
     res.status(201).json({
-      data: performance,
+      status: false,
       message: 'Performance successfully created.',
+      data: performance,
     });
   } catch (error) {
     next(error);
