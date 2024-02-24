@@ -8,37 +8,39 @@ import {
 
 const router = express.Router();
 
-router.get('/positions', async (req, res) => {
+router.get('/positions', async (req, res, next) => {
   try {
-    const positions = await getAllPositions();
+    const { id } = req.user;
+    const positions = await getAllPositions(id);
 
-    res.status(200).json(positions);
-  } catch (error) {
-    res.status(400).json({
-      message: error.message,
+    res.status(200).json({
+      status: false,
+      positions,
     });
+  } catch (error) {
+    next(error);
   }
 });
 
-router.post('/positions', async (req, res) => {
+router.post('/positions', async (req, res, next) => {
   try {
+    const { id } = req.user;
     const familyData = req.body;
-    const position = await createPosition(familyData);
+    const position = await createPosition(familyData, id);
 
     res.status(201).json({
+      status: false,
+      message: 'Position created successfully.',
       data: {
         position,
       },
-      message: 'Position created successfully.',
     });
   } catch (error) {
-    res.status(400).json({
-      message: error.message,
-    });
+    next(error);
   }
 });
 
-router.patch('/positions/:id', async (req, res) => {
+router.patch('/positions/:id', async (req, res, next) => {
   try {
     const positionById = req.params.id;
     const positionData = req.body;
@@ -49,13 +51,11 @@ router.patch('/positions/:id', async (req, res) => {
       message: 'Position updated successfully.',
     });
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    next(error);
   }
 });
 
-router.delete('/positions/:id', async (req, res) => {
+router.delete('/positions/:id', async (req, res, next) => {
   try {
     const positionById = req.params.id;
 
@@ -65,9 +65,7 @@ router.delete('/positions/:id', async (req, res) => {
       message: 'Position deleted successfully.',
     });
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    next(error);
   }
 });
 
