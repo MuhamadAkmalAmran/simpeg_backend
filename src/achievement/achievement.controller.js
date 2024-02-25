@@ -8,53 +8,61 @@ import {
 
 const router = express.Router();
 
-router.get('/achievements', async (req, res) => {
-  const achievements = await getAllAchievements();
-  res.status(200).json(achievements);
+router.get('/achievements', async (req, res, next) => {
+  try {
+    const { id } = req.user;
+    const achievements = await getAllAchievements(id);
+    res.status(200).json({
+      error: false,
+      achievements,
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
-router.post('/achievements', async (req, res) => {
+router.post('/achievements', async (req, res, next) => {
   try {
+    const { id } = req.user;
     const achievementData = req.body;
-    const achievement = await createAchievement(achievementData);
+    const achievement = await createAchievement(achievementData, id);
     res.status(201).json({
-      data: achievement,
+      error: false,
       message: 'Achievement created successfully.',
+      data: achievement,
     });
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    next(error);
   }
 });
 
-router.patch('/achievements/:id', async (req, res) => {
+router.patch('/achievements/:id', async (req, res, next) => {
   try {
+    const { id } = req.user;
     const achievementById = req.params.id;
     const achievementData = req.body;
-    const achievement = await updateAchievement(achievementById, achievementData);
+    const achievement = await updateAchievement(achievementById, achievementData, id);
     res.status(200).json({
-      data: achievement,
+      error: false,
       message: 'Achievement updated successfully.',
+      data: achievement,
     });
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    next(error);
   }
 });
 
-router.delete('/achievements/:id', async (req, res) => {
+router.delete('/achievements/:id', async (req, res, next) => {
   try {
+    const { id } = req.user;
     const achievementById = req.params.id;
-    await deleteAchievementById(achievementById);
+    await deleteAchievementById(achievementById, id);
     res.status(200).json({
+      error: false,
       message: 'Achievement deleted successfully.',
     });
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    next(error);
   }
 });
 

@@ -1,47 +1,59 @@
+import ResponseError from '../utils/response-error.js';
+import {
+  createAchievementValidation,
+  getAchievementValidation,
+  updateAchievementValidation,
+} from '../validation/achievement-validation.js';
+import validate from '../validation/validation.js';
 import {
   deleteAchievement,
   editAchievement,
   findAchievementById,
-  findAllAchievements,
+  findAllAchievementsByUser,
   insertAchievement,
 } from './achievement.repository.js';
 
-const getAllAchievements = async () => {
-  const achievements = await findAllAchievements();
+const getAllAchievements = async (userId) => {
+  const achievements = await findAllAchievementsByUser(userId);
   return achievements;
 };
 
-const getAchievementById = async (id) => {
-  const achievement = await findAchievementById(id);
-  return achievement;
-};
+const getAchievementById = async (id, userId) => {
+  const achievementValidation = await validate(getAchievementValidation, id);
+  const achievement = await findAchievementById(achievementValidation, userId);
 
-const createAchievement = async (achievementData) => {
-  if (!achievementData.nama || !achievementData.tingkat
-    || !achievementData.tahun || !achievementData.penyelenggara) {
-    throw new Error('Fields are required');
+  if (!achievement) {
+    throw new ResponseError(404, 'Achivement not found.');
   }
-  const achievement = await insertAchievement(achievementData);
+
   return achievement;
 };
 
-const updateAchievement = async (id, achievementData) => {
-  const achievementById = await findAchievementById(id);
+const createAchievement = async (achievementData, userId) => {
+  const achievementValidation = await validate(createAchievementValidation, achievementData);
+  const achievement = await insertAchievement(achievementValidation, userId);
+  return achievement;
+};
+
+const updateAchievement = async (id, achievementData, userId) => {
+  const achievementValidation = await validate(updateAchievementValidation, achievementData);
+
+  const achievementById = await getAchievementById(id, userId);
 
   if (!achievementById) {
-    throw new Error('Achievement not found.');
+    throw new ResponseError(404, 'Achievement not found.');
   }
-  const achievement = await editAchievement(id, achievementData);
+  const achievement = await editAchievement(id, achievementValidation);
   return achievement;
 };
 
-const deleteAchievementById = async (id) => {
-  const achievementById = await findAchievementById(id);
+const deleteAchievementById = async (id, userId) => {
+  const achievementById = await getAchievementById(id, userId);
 
   if (!achievementById) {
-    throw new Error('Achievement not found.');
+    throw new ResponseError(404, 'Achievement not found.');
   }
-  const achievement = await deleteAchievement(id);
+  const achievement = await deleteAchievement(id, userId);
   return achievement;
 };
 
