@@ -1,36 +1,43 @@
 import prisma from '../db/database.js';
 
-const findAllTraining = async () => {
-  const trainings = await prisma.training.findMany();
+const findAllTrainingByUser = async (userId) => {
+  const trainings = await prisma.training.findMany({
+    where: {
+      user_id: userId,
+    },
+  });
 
   return trainings;
 };
 
-const findTrainingById = async (id) => {
+const findTrainingById = async (id, userId) => {
   const training = await prisma.training.findUnique({
     where: {
       id,
+      user_id: userId,
     },
   });
   return training;
 };
 
-const insertTraining = async (trainingData) => {
+const insertTraining = async (trainingData, userId) => {
   const training = await prisma.training.create({
     data: {
       nama: trainingData.nama,
       penyelenggara: trainingData.penyelenggara,
       jpl: trainingData.jpl,
       tahun_kegiatan: trainingData.tahun_kegiatan,
+      user_id: userId,
     },
   });
   return training;
 };
 
-const editTraining = async (id, trainingData) => {
+const editTraining = async (id, trainingData, userId) => {
   const training = await prisma.training.update({
     where: {
       id,
+      user_id: userId,
     },
     data: {
       nama: trainingData.nama,
@@ -42,17 +49,18 @@ const editTraining = async (id, trainingData) => {
   return training;
 };
 
-const deleteTraining = async (id) => {
+const deleteTraining = async (id, userId) => {
   const training = await prisma.training.delete({
     where: {
       id,
+      user_id: userId,
     },
   });
   return training;
 };
 
 export {
-  findAllTraining,
+  findAllTrainingByUser,
   findTrainingById,
   insertTraining,
   editTraining,

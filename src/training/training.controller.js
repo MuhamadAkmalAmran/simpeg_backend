@@ -7,54 +7,62 @@ import {
 
 const router = express.Router();
 
-router.get('/trainings', async (req, res) => {
-  const trainigs = await getAllTrainings();
-  res.status(200).json(trainigs);
+router.get('/trainings', async (req, res, next) => {
+  try {
+    const { id } = req.user;
+    const trainigs = await getAllTrainings(id);
+    res.status(200).json({
+      status: false,
+      trainigs,
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
-router.post('/trainings', async (req, res) => {
+router.post('/trainings', async (req, res, next) => {
   try {
+    const { id } = req.user;
     const trainingData = req.body;
-    const training = await createTraining(trainingData);
+    const training = await createTraining(trainingData, id);
     res.status(201).json({
-      data: training,
+      status: false,
       message: 'Training successfully created.',
+      data: training,
     });
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    next(error);
   }
 });
 
-router.patch('/trainings/:id', async (req, res) => {
+router.patch('/trainings/:id', async (req, res, next) => {
   try {
+    const { id } = req.user;
     const trainingById = req.params.id;
     const trainingData = req.body;
-    const training = await updateTraining(trainingById, trainingData);
+    const training = await updateTraining(trainingById, trainingData, id);
     res.status(200).json({
-      data: training,
+      status: false,
       message: 'Training successfully updated.',
+      data: training,
     });
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    next(error);
   }
 });
 
-router.delete('/trainings/:id', async (req, res) => {
+router.delete('/trainings/:id', async (req, res, next) => {
   try {
+    const { id } = req.user;
     const trainingById = req.params.id;
 
-    await deleteTrainingById(trainingById);
+    await deleteTrainingById(trainingById, id);
     res.status(200).json({
+      status: false,
       message: 'Training successfully deleted.',
     });
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    next(error);
   }
 });
 
