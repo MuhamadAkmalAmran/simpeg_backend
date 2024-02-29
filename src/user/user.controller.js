@@ -3,6 +3,7 @@ import {
   getAllUsers,
   createUser, loginUser,
   logoutUser,
+  getUserByUsername,
 } from './user.service.js';
 import { authMiddleware } from '../middleware/authentication.middleware.js';
 
@@ -14,6 +15,19 @@ router.get('/users', authMiddleware, async (req, res) => {
   res.status(200).json({
     data: users,
   });
+});
+
+router.get('/users/current', authMiddleware, async (req, res, next) => {
+  try {
+    const { username } = req.user;
+    const user = await getUserByUsername(username);
+    res.status(200).json({
+      error: false,
+      user,
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.post('/register', async (req, res, next) => {

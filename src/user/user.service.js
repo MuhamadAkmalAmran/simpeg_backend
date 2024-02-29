@@ -15,6 +15,11 @@ const getAllUsers = async () => {
   return users;
 };
 
+const getUserByUsername = async (username) => {
+  const user = await findUserByUsername(username);
+  return user;
+};
+
 const createUser = async (userData) => {
   const existingUserByUsername = await findUserByUsername(userData.username);
   if (existingUserByUsername) {
@@ -52,6 +57,9 @@ const logoutUser = async (username) => {
 };
 
 export {
-  getAllUsers, createUser, loginUser,
+  getAllUsers,
+  createUser,
+  loginUser,
   logoutUser,
+  getUserByUsername,
 };

@@ -31,10 +31,14 @@ const insertUser = async (userData) => {
   return user;
 };
 
-const findUserByUsername = async (userData) => {
+const findUserByUsername = async (username) => {
   const user = await prisma.user.findUnique({
     where: {
-      username: userData.username,
+      username,
+    },
+    select: {
+      username: true,
+      email: true,
     },
   });
 
