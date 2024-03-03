@@ -1,12 +1,18 @@
 import bcrypt from 'bcrypt';
 import {
   deleteToken,
+  deleteUser,
   findAllUsers,
-  findUserByUsername, insertUser,
+  findUserById,
+  findUserByUsername, findUserCurrent, insertUser,
   updateTokenUserByUsername,
 } from './user.repository.js';
 import validate from '../validation/validation.js';
-import { registerValidation, loginValidation, getUserNameValidation } from '../validation/user-validation.js';
+import {
+  registerValidation,
+  loginValidation,
+  getUserValidation,
+} from '../validation/user-validation.js';
 import ResponseError from '../utils/response-error.js';
 
 const getAllUsers = async () => {
@@ -16,7 +22,7 @@ const getAllUsers = async () => {
 };
 
 const getUserByUsername = async (username) => {
-  const user = await findUserByUsername(username);
+  const user = await findUserCurrent(username);
   return user;
 };
 
@@ -33,7 +39,9 @@ const createUser = async (userData) => {
 
 const loginUser = async (userData) => {
   const userValidation = await validate(loginValidation, userData);
-  const user = await findUserByUsername(userValidation);
+
+  // const usernameValidation = await validate(getUserNameValidation, userData.username);
+  const user = await findUserByUsername(userValidation.username);
 
   if (!user) {
     throw new ResponseError(401, 'User does not exist');
@@ -44,14 +52,25 @@ const loginUser = async (userData) => {
     throw new ResponseError(401, 'Username or Password wrong.');
   }
 
-  const updateToken = await updateTokenUserByUsername(user, userValidation.username);
+  const updateToken = await updateTokenUserByUsername(user, user.username);
 
   return updateToken;
 };
 
 const logoutUser = async (username) => {
-  const userValidation = await validate(getUserNameValidation, username);
+  const userValidation = await validate(getUserValidation, username);
   const user = await deleteToken(userValidation);
+
+  return user;
+};
+
+const deleteUserById = async (id) => {
+  const userValidation = await validate(getUserValidation, id);
+  const userById = await findUserById(userValidation);
+  if (!userById) {
+    throw new ResponseError(404, 'User does not exist');
+  }
+  const user = await deleteUser(userValidation);
 
   return user;
 };
@@ -62,4 +81,5 @@ export {
   loginUser,
   logoutUser,
   getUserByUsername,
+  deleteUserById,
 };

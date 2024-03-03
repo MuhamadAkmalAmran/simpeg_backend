@@ -4,12 +4,13 @@ import {
   createUser, loginUser,
   logoutUser,
   getUserByUsername,
+  deleteUserById,
 } from './user.service.js';
 import { authMiddleware } from '../middleware/authentication.middleware.js';
 
 const router = express.Router();
 
-router.get('/users', authMiddleware, async (req, res) => {
+router.get('/users', async (req, res) => {
   const users = await getAllUsers();
 
   res.status(200).json({
@@ -67,6 +68,19 @@ router.delete('/logout', authMiddleware, async (req, res, next) => {
     res.status(200).json({
       status: false,
       message: 'Logout successfull',
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.delete('/users/:id', async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+    await deleteUserById(userId);
+    res.status(200).json({
+      error: false,
+      message: 'User deleted',
     });
   } catch (error) {
     next(error);

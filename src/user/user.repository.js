@@ -15,6 +15,15 @@ const findAllUsers = async () => {
   return users;
 };
 
+const findUserById = async (id) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id,
+    },
+  });
+  return user;
+};
+
 const insertUser = async (userData) => {
   const hashPassword = await bcrypt.hash(userData.password, 10);
 
@@ -24,7 +33,28 @@ const insertUser = async (userData) => {
       username: userData.username,
       email: userData.email,
       password: hashPassword,
+      // role: userData.role,
       img_url: userData.img_url,
+      profile: {
+        create: {
+          user_id: userData.id,
+        },
+      },
+    },
+  });
+
+  return user;
+};
+
+const findUserCurrent = async (username) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      username,
+    },
+    select: {
+      username: true,
+      email: true,
+      role: true,
     },
   });
 
@@ -36,10 +66,6 @@ const findUserByUsername = async (username) => {
     where: {
       username,
     },
-    select: {
-      username: true,
-      email: true,
-    },
   });
 
   return user;
@@ -49,6 +75,7 @@ const updateTokenUserByUsername = async (userData, username) => {
   const token = accessToken({
     id: userData.id,
     username: userData.username,
+    role: userData.role,
   });
   const user = await prisma.user.update({
     where: {
@@ -80,10 +107,22 @@ const deleteToken = async (username) => {
   return user;
 };
 
+const deleteUser = async (id) => {
+  const user = await prisma.user.delete({
+    where: {
+      id,
+    },
+  });
+  return user;
+};
+
 export {
   findAllUsers,
-  insertUser,
+  findUserById,
   findUserByUsername,
+  insertUser,
+  findUserCurrent,
   updateTokenUserByUsername,
   deleteToken,
+  deleteUser,
 };
