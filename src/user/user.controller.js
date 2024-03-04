@@ -5,12 +5,13 @@ import {
   logoutUser,
   getUserByUsername,
   deleteUserById,
+  getDetailUser,
 } from './user.service.js';
-import { authMiddleware } from '../middleware/authentication.middleware.js';
+import { adminMiddleware, authMiddleware } from '../middleware/authentication.middleware.js';
 
 const router = express.Router();
 
-router.get('/users', async (req, res) => {
+router.get('/users', adminMiddleware, async (req, res) => {
   const users = await getAllUsers();
 
   res.status(200).json({
@@ -22,6 +23,19 @@ router.get('/users/current', authMiddleware, async (req, res, next) => {
   try {
     const { username } = req.user;
     const user = await getUserByUsername(username);
+    res.status(200).json({
+      error: false,
+      user,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/users/:id', adminMiddleware, async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+    const user = await getDetailUser(userId);
     res.status(200).json({
       error: false,
       user,

@@ -26,6 +26,15 @@ const getUserByUsername = async (username) => {
   return user;
 };
 
+const getDetailUser = async (id) => {
+  const userValidation = await validate(getUserValidation, id);
+  const user = await findUserById(userValidation);
+  if (!user) {
+    throw new ResponseError(404, 'User not found');
+  }
+  return user;
+};
+
 const createUser = async (userData) => {
   const existingUserByUsername = await findUserByUsername(userData.username);
   if (existingUserByUsername) {
@@ -77,6 +86,7 @@ const deleteUserById = async (id) => {
 
 export {
   getAllUsers,
+  getDetailUser,
   createUser,
   loginUser,
   logoutUser,

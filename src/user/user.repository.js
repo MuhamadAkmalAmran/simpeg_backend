@@ -4,11 +4,23 @@ import accessToken from '../utils/jwt.js';
 
 const findAllUsers = async () => {
   const users = await prisma.user.findMany({
+    where: {
+      role: 'USER',
+    },
     select: {
       id: true,
-      username: true,
-      email: true,
-      img_url: true,
+      nama: true,
+      profile: {
+        select: {
+          status_kepegawaian: true,
+        },
+      },
+      titles: {
+        select: {
+          jabatan: true,
+          unit_kerja: true,
+        },
+      },
     },
   });
 
@@ -19,6 +31,25 @@ const findUserById = async (id) => {
   const user = await prisma.user.findUnique({
     where: {
       id,
+    },
+    select: {
+      id: true,
+      nama: true,
+      profile: {
+        select: {
+          tempat_lahir: true,
+          tanggal_lahir: true,
+          jenis_kelamin: true,
+          Agama: true,
+          status_kepegawaian: true,
+        },
+      },
+      titles: {
+        select: {
+          jabatan: true,
+          unit_kerja: true,
+        },
+      },
     },
   });
   return user;
