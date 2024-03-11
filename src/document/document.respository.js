@@ -1,4 +1,4 @@
-import prisma from '../db/database.js';
+import prisma from '../config/database.js';
 
 const findAllDocumentsByUser = async (userId) => {
   const documents = await prisma.document.findMany({

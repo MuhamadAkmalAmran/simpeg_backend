@@ -1,5 +1,5 @@
 import ResponseError from '../utils/response-error.js';
-import { createDocumentValidation } from '../validation/document-validation.js';
+import { createDocumentValidation, updateDocumentValidation } from '../validation/document-validation.js';
 import validate from '../validation/validation.js';
 import {
   deleteDocument,
@@ -8,6 +8,7 @@ import {
   findDocumentById,
   insertDocument,
 } from './document.respository.js';
+import uploadFile from '../utils/upload-file.js';
 
 const getAllDocumentsByUser = async (userId) => {
   const documents = await findAllDocumentsByUser(userId);
@@ -25,22 +26,39 @@ const getDocumentById = async (id, userId) => {
   return document;
 };
 
-const createDocument = async (documentData, userId) => {
+const createDocument = async (documentData, userId, file) => {
   const doucmentValidation = await validate(createDocumentValidation, documentData);
 
-  const document = await insertDocument(doucmentValidation, userId);
+  const fileUrl = await uploadFile(file);
+  // console.info(fileUrl);
+
+  const document = await insertDocument({
+    id: doucmentValidation.id,
+    jenis_dokumen: doucmentValidation.jenis_dokumen,
+    no_dokumen: doucmentValidation.no_dokumen,
+    file_url: fileUrl.file_url,
+  }, userId);
 
   return document;
 };
 
-const updateDocument = async (id, documentData, userId) => {
-  const documentById = getDocumentById(id);
+const updateDocument = async (id, documentData, userId, file) => {
+  const documentById = await getDocumentById(id);
 
   if (!documentById) {
     throw new ResponseError(404, 'Document not found.');
   }
 
-  const document = await editDocument(id, documentData, userId);
+  const doucmentValidation = await validate(updateDocumentValidation, documentData);
+
+  const fileUrl = await uploadFile(file);
+
+  const document = await editDocument(id, {
+    id: doucmentValidation.id,
+    jenis_dokumen: doucmentValidation.jenis_dokumen,
+    no_dokumen: doucmentValidation.no_dokumen,
+    file_url: fileUrl.file_url,
+  }, userId);
 
   return document;
 };

@@ -5,6 +5,7 @@ import {
   getAllDocumentsByUser,
   updateDocument,
 } from './document.service.js';
+import { multerErrorHandler, upload } from '../middleware/upload-file-middleware.js';
 
 const router = express.Router();
 
@@ -21,11 +22,12 @@ router.get('/documents', async (req, res, next) => {
   }
 });
 
-router.post('/documents', async (req, res, next) => {
+router.post('/documents', upload, multerErrorHandler, async (req, res, next) => {
   try {
     const { id } = req.user;
     const doucmentData = req.body;
-    const documents = await createDocument(doucmentData, id);
+    const docFile = req.file;
+    const documents = await createDocument(doucmentData, id, docFile);
     res.status(201).json({
       error: false,
       messaage: 'Document successfully created',
@@ -36,12 +38,13 @@ router.post('/documents', async (req, res, next) => {
   }
 });
 
-router.patch('/documents/:id', async (req, res, next) => {
+router.patch('/documents/:id', upload, multerErrorHandler, async (req, res, next) => {
   try {
     const documentId = req.params.id;
     const documentData = req.body;
     const { id } = req.user;
-    const document = await updateDocument(documentId, documentData, id);
+    const docFile = req.file;
+    const document = await updateDocument(documentId, documentData, id, docFile);
     res.status(200).json({
       error: false,
       messaage: 'Document successfully updated',
