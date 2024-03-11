@@ -1,4 +1,4 @@
-import prisma from '../db/database.js';
+import prisma from '../config/database.js';
 
 const findAllTitlesByUser = async (userId) => {
   const titles = await prisma.title.findMany({
@@ -29,6 +29,7 @@ const insertTitle = async (titleData, userId) => {
       tanggal_berakhir: titleData.tanggal_berakhir,
       no_sk: titleData.no_sk,
       tanggal_sk: titleData.tanggal_sk,
+      file_url: titleData.file_url,
       user_id: userId,
     },
   });
@@ -48,6 +49,7 @@ const editTitle = async (id, titleData, userId) => {
       tanggal_berakhir: titleData.tanggal_berakhir,
       no_sk: titleData.no_sk,
       tanggal_sk: titleData.tanggal_sk,
+      file_url: titleData.file_url,
     },
   });
   return title;

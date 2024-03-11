@@ -5,6 +5,7 @@ import {
   getAllTitles,
   updateTitle,
 } from './title.service.js';
+import { multerErrorHandler, upload } from '../middleware/upload-file-middleware.js';
 
 const router = express.Router();
 
@@ -21,29 +22,29 @@ router.get('/titles', async (req, res, next) => {
   }
 });
 
-router.post('/titles', async (req, res) => {
+router.post('/titles', upload, multerErrorHandler, async (req, res, next) => {
   try {
     const { id } = req.user;
     const titleData = req.body;
-    const title = await createTitle(titleData, id);
+    const titleFile = req.file;
+    const title = await createTitle(titleData, id, titleFile);
     res.status(201).json({
       status: false,
       message: 'Title created successfully.',
       data: title,
     });
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    next(error);
   }
 });
 
-router.patch('/titles/:id', async (req, res, next) => {
+router.patch('/titles/:id', upload, multerErrorHandler, async (req, res, next) => {
   try {
     const { id } = req.user;
     const titleById = req.params.id;
     const titleData = req.body;
-    const title = await updateTitle(titleById, titleData, id);
+    const titleFile = req.file;
+    const title = await updateTitle(titleById, titleData, id, titleFile);
     res.status(200).json({
       status: false,
       message: 'Title updated successfully.',

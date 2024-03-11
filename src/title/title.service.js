@@ -1,4 +1,5 @@
 import ResponseError from '../utils/response-error.js';
+import uploadFile from '../utils/upload-file.js';
 import { createTitleValidation, getTitleValidation } from '../validation/title-validation.js';
 import validate from '../validation/validation.js';
 import {
@@ -24,22 +25,42 @@ const getTitleById = async (id, userId) => {
   return title;
 };
 
-const createTitle = async (titleData, userId) => {
+const createTitle = async (titleData, userId, file) => {
   const titleValidation = await validate(createTitleValidation, titleData);
-  const title = await insertTitle(titleValidation, userId);
+  const fileUrl = await uploadFile(file);
+  const title = await insertTitle({
+    id: titleValidation.id,
+    jabatan: titleValidation.jabatan,
+    unit_kerja: titleValidation.unit_kerja,
+    tmt: titleValidation.tmt,
+    tanggal_berakhir: titleValidation.tanggal_berakhir,
+    no_sk: titleValidation.no_sk,
+    tanggal_sk: titleValidation.tanggal_sk,
+    file_url: fileUrl.file_url,
+  }, userId);
 
   return title;
 };
 
-const updateTitle = async (id, titleData, userId) => {
+const updateTitle = async (id, titleData, userId, file) => {
   const titleValidation = await validate(getTitleValidation, id);
   const titleById = await findTitleById(id, userId);
 
   if (!titleById) {
     throw new ResponseError(404, 'Title not found.');
   }
+  const fileUrl = await uploadFile(file);
 
-  const title = await editTitle(titleValidation, titleData);
+  const title = await editTitle(titleValidation, {
+    id: titleData.id,
+    jabatan: titleData.jabatan,
+    unit_kerja: titleData.unit_kerja,
+    tmt: titleData.tmt,
+    tanggal_berakhir: titleData.tanggal_berakhir,
+    no_sk: titleData.no_sk,
+    tanggal_sk: titleData.tanggal_sk,
+    file_url: fileUrl.file_url,
+  });
 
   return title;
 };
