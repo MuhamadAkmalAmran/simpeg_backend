@@ -1,4 +1,5 @@
 import ResponseError from '../utils/response-error.js';
+import uploadFile from '../utils/upload-file.js';
 import {
   createPositionValidation,
   getPositionValidation,
@@ -19,14 +20,22 @@ const getAllPositions = async (userId) => {
   return positions;
 };
 
-const createPosition = async (positionData, userId) => {
+const createPosition = async (positionData, userId, file) => {
   const positionValidation = await validate(createPositionValidation, positionData);
-  const position = await insertPosition(positionValidation, userId);
+  const fileUrl = await uploadFile(file);
+  const position = await insertPosition({
+    id: positionValidation.id,
+    no_sk: positionValidation.no_sk,
+    tanggal_sk: positionValidation.tanggal_sk,
+    tmt: positionValidation.tmt,
+    gaji_pokok: positionValidation.gaji_pokok,
+    file_url: fileUrl.file_url,
+  }, userId);
 
   return position;
 };
 
-const updatePosition = async (id, positionData, userId) => {
+const updatePosition = async (id, positionData, userId, file) => {
   const positionValidation = await validate(updatePositionValidation, positionData);
 
   const positionById = await findPositionById(id, userId);
@@ -35,7 +44,16 @@ const updatePosition = async (id, positionData, userId) => {
     throw new ResponseError(404, 'Position not found.');
   }
 
-  const position = await updatePositionById(positionById, positionValidation);
+  const fileUrl = await uploadFile(file);
+
+  const position = await updatePositionById(id, {
+    id: positionValidation.id,
+    no_sk: positionValidation.no_sk,
+    tanggal_sk: positionValidation.tanggal_sk,
+    tmt: positionValidation.tmt,
+    gaji_pokok: positionValidation.gaji_pokok,
+    file_url: fileUrl.file_url,
+  }, userId);
 
   return position;
 };

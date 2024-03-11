@@ -1,4 +1,4 @@
-import prisma from '../db/database.js';
+import prisma from '../config/database.js';
 
 const findAllPositionsByUser = async (userId) => {
   const positions = await prisma.position.findMany({
@@ -17,8 +17,7 @@ const insertPosition = async (positionData, userId) => {
       tanggal_sk: positionData.tanggal_sk,
       tmt: positionData.tmt,
       gaji_pokok: positionData.gaji_pokok,
-      jenis_sk: positionData.jenis_sk,
-      sk_url: positionData.sk_url,
+      file_url: positionData.file_url,
       user_id: userId,
     },
   });
@@ -48,8 +47,7 @@ const updatePositionById = async (id, positionData, userId) => {
       tanggal_sk: positionData.tanggal_sk,
       tmt: positionData.tmt,
       gaji_pokok: positionData.gaji_pokok,
-      jenis_sk: positionData.jenis_sk,
-      sk_url: positionData.sk_url,
+      file_url: positionData.file_url,
     },
   });
 
