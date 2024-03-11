@@ -1,4 +1,4 @@
-import prisma from '../db/database.js';
+import prisma from '../config/database.js';
 
 const findAllTrainingByUser = async (userId) => {
   const trainings = await prisma.training.findMany({
@@ -27,6 +27,7 @@ const insertTraining = async (trainingData, userId) => {
       penyelenggara: trainingData.penyelenggara,
       jpl: trainingData.jpl,
       tahun_kegiatan: trainingData.tahun_kegiatan,
+      file_url: trainingData.file_url,
       user_id: userId,
     },
   });
@@ -44,6 +45,7 @@ const editTraining = async (id, trainingData, userId) => {
       penyelenggara: trainingData.penyelenggara,
       jpl: trainingData.jpl,
       tahun_kegiatan: trainingData.tahun_kegiatan,
+      file_url: trainingData.file_url,
     },
   });
   return training;

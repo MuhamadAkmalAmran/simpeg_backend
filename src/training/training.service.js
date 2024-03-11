@@ -1,5 +1,10 @@
 import ResponseError from '../utils/response-error.js';
-import { createTrainingValidation, getTrainingValidation } from '../validation/tarining-va;lidation.js';
+import uploadFile from '../utils/upload-file.js';
+import {
+  createTrainingValidation,
+  getTrainingValidation,
+  updateTrainingValidation,
+} from '../validation/training-validation.js';
 import validate from '../validation/validation.js';
 import {
   deleteTraining,
@@ -25,21 +30,39 @@ const getTrainingById = async (id, userId) => {
   return training;
 };
 
-const createTraining = async (trainingData, userId) => {
+const createTraining = async (trainingData, userId, file) => {
   const trainingValidation = await validate(createTrainingValidation, trainingData);
-  const training = await insertTraining(trainingValidation, userId);
+  const fileUrl = await uploadFile(file);
+  const training = await insertTraining({
+    id: trainingValidation.id,
+    nama: trainingValidation.nama,
+    penyelenggara: trainingValidation.penyelenggara,
+    jpl: trainingValidation.jpl,
+    tahun_kegiatan: trainingValidation.tahun_kegiatan,
+    file_url: fileUrl.file_url,
+  }, userId);
 
   return training;
 };
 
-const updateTraining = async (id, trainingData, userId) => {
+const updateTraining = async (id, trainingData, userId, file) => {
   const trainingValidation = await validate(getTrainingValidation, id);
+  const trainingValidationData = await validate(updateTrainingValidation, trainingData);
   const trainingById = await getTrainingById(trainingValidation, userId);
 
   if (!trainingById) {
     throw new ResponseError(404, 'Training not found.');
   }
-  const training = await editTraining(trainingValidation, trainingData);
+  const fileUrl = await uploadFile(file);
+
+  const training = await editTraining(trainingValidation, {
+    id: trainingValidationData.id,
+    nama: trainingValidationData.nama,
+    penyelenggara: trainingValidationData.penyelenggara,
+    jpl: trainingValidationData.jpl,
+    tahun_kegiatan: trainingValidationData.tahun_kegiatan,
+    file_url: fileUrl.file_url,
+  });
 
   return training;
 };
