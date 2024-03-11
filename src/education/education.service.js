@@ -1,4 +1,5 @@
 import ResponseError from '../utils/response-error.js';
+import uploadFile from '../utils/upload-file.js';
 import {
   createEducationValidation,
   getEducationValidation,
@@ -29,15 +30,24 @@ const getEducationById = async (id) => {
   return education;
 };
 
-const createEducation = async (educationData, userId) => {
+const createEducation = async (educationData, userId, file) => {
   const educationValidation = await validate(createEducationValidation, educationData);
 
-  const education = await insertEducation(educationValidation, userId);
+  const fileUrl = await uploadFile(file);
+
+  const education = await insertEducation({
+    id: educationValidation.id,
+    jenjang: educationValidation.jenjang,
+    nama: educationValidation.nama,
+    jurusan: educationValidation.jurusan,
+    tahun_lulus: educationValidation.tahun_lulus,
+    file_url: fileUrl.file_url,
+  }, userId);
 
   return education;
 };
 
-const updateEducation = async (id, educationData, userId) => {
+const updateEducation = async (id, educationData, userId, file) => {
   const educationValidation = await validate(getEducationValidation, id);
   const educationValidationData = await validate(updateEducationValidation, educationData);
   const educationById = await findEducationById(educationValidation, userId);
@@ -46,7 +56,16 @@ const updateEducation = async (id, educationData, userId) => {
     throw new ResponseError(404, 'Education not found.');
   }
 
-  const education = await editEducation(educationValidation, educationValidationData);
+  const fileUrl = await uploadFile(file);
+
+  const education = await editEducation(educationValidation, {
+    id: educationValidationData.id,
+    jenjang: educationValidationData.jenjang,
+    nama: educationValidationData.nama,
+    jurusan: educationValidationData.jurusan,
+    tahun_lulus: educationValidationData.tahun_lulus,
+    file_url: fileUrl.file_url,
+  });
 
   return education;
 };

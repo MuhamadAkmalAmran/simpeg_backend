@@ -1,4 +1,4 @@
-import prisma from '../db/database.js';
+import prisma from '../config/database.js';
 
 const findAllEducation = async (userId) => {
   const educations = await prisma.education.findMany({
@@ -14,9 +14,10 @@ const insertEducation = async (educationData, userId) => {
   const education = await prisma.education.create({
     data: {
       jenjang: educationData.jenjang,
-      nama_instansi: educationData.nama_instansi,
+      nama: educationData.nama,
       jurusan: educationData.jurusan,
       tahun_lulus: educationData.tahun_lulus,
+      file_url: educationData.file_url,
       user_id: userId,
     },
   });
@@ -43,7 +44,7 @@ const editEducation = async (id, educationData, userId) => {
     },
     data: {
       jenjang: educationData.jenjang,
-      nama_instansi: educationData.nama_instansi,
+      nama: educationData.nama,
       jurusan: educationData.jurusan,
       tahun_lulus: educationData.tahun_lulus,
     },
