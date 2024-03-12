@@ -1,6 +1,15 @@
 // import { format, formatISO, parse } from 'date-fns';
-import prisma from '../db/database.js';
+import prisma from '../config/database.js';
 
+const findAllFamilies = async (userId) => {
+  const families = await prisma.family.findMany({
+    where: {
+      user_id: userId,
+    },
+  });
+
+  return families;
+};
 const findAllFamiliesByUser = async (userId) => {
   const families = await prisma.family.findMany({
     where: {
@@ -70,10 +79,26 @@ const deleteFamily = async (id, userId) => {
   return family;
 };
 
+const verificationFamily = async (id, familyData, userId) => {
+  const verifFamily = await prisma.family.update({
+    where: {
+      id,
+      user_id: userId,
+    },
+    data: {
+      status_verifikasi: familyData.status_verifikasi,
+      alasan_ditolak: familyData.alasan_ditolak,
+    },
+  });
+  return verifFamily;
+};
+
 export {
+  findAllFamilies,
   findAllFamiliesByUser,
   insertFamily,
   editFamily,
   findFamilyById,
   deleteFamily,
+  verificationFamily,
 };

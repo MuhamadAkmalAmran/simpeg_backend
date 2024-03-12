@@ -1,18 +1,52 @@
+import { findUserById } from '../user/user.repository.js';
 import ResponseError from '../utils/response-error.js';
 import {
   createFamilyValidation,
   getFamilyValidation,
 } from '../validation/family-validation.js';
 import validate from '../validation/validation.js';
+import verifValidation from '../validation/verification-validation.js';
 import {
   deleteFamily,
   editFamily,
+  findAllFamilies,
   findAllFamiliesByUser,
   findFamilyById,
   insertFamily,
+  verificationFamily,
 } from './family.repository.js';
 
+// admin role
 const getAllFamilies = async (userId) => {
+  const user = await findUserById(userId);
+
+  if (!user) {
+    throw new ResponseError(404, 'User not found');
+  }
+  const families = await findAllFamilies(userId);
+
+  return families;
+};
+
+const verifFamily = async (id, familyData, userId) => {
+  const user = await findUserById(userId);
+
+  if (!user) {
+    throw new ResponseError(404, 'User not found');
+  }
+  const familyById = await findFamilyById(id, userId);
+
+  if (!familyById) {
+    throw new ResponseError(404, 'Family not found');
+  }
+  const famVerifValidation = await validate(verifValidation, familyData);
+  const familyVerif = await verificationFamily(id, famVerifValidation, userId);
+
+  return familyVerif;
+};
+
+// user role
+const getAllFamiliesByUser = async (userId) => {
   const families = await findAllFamiliesByUser(userId);
 
   return families;
@@ -56,7 +90,9 @@ const deleteFamilyById = async (id, userId) => {
 
 export {
   getAllFamilies,
+  getAllFamiliesByUser,
   createFamily,
   updateFamily,
   deleteFamilyById,
+  verifFamily,
 };
