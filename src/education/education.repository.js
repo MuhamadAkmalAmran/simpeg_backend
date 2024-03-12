@@ -73,7 +73,7 @@ const deleteEducation = async (id, userId) => {
   return education;
 };
 
-const verificatioEducation = async (id, educationData, userId) => {
+const verificationEducation = async (id, educationData, userId) => {
   const verifEducation = await prisma.education.update({
     where: {
       id,
@@ -94,5 +94,5 @@ export {
   findEducationById,
   editEducation,
   deleteEducation,
-  verificatioEducation,
+  verificationEducation,
 };

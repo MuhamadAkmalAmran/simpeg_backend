@@ -15,7 +15,7 @@ import {
   findAllEducationByUser,
   findEducationById,
   insertEducation,
-  verificatioEducation,
+  verificationEducation,
 } from './education.repository.js';
 
 // admin role
@@ -42,7 +42,7 @@ const verifEducation = async (id, educationData, userId) => {
     throw new ResponseError(404, 'Education not found');
   }
   const eduVerifValidation = await validate(verifValidation, educationData);
-  const educationVerif = await verificatioEducation(id, eduVerifValidation, userId);
+  const educationVerif = await verificationEducation(id, eduVerifValidation, userId);
 
   return educationVerif;
 };
