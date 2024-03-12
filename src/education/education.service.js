@@ -1,3 +1,4 @@
+import { findUserById } from '../user/user.repository.js';
 import ResponseError from '../utils/response-error.js';
 import uploadFile from '../utils/upload-file.js';
 import {
@@ -6,16 +7,49 @@ import {
   updateEducationValidation,
 } from '../validation/education-validation.js';
 import validate from '../validation/validation.js';
+import verifValidation from '../validation/verification-validation.js';
 import {
   deleteEducation,
   editEducation,
   findAllEducation,
+  findAllEducationByUser,
   findEducationById,
   insertEducation,
+  verificatioEducation,
 } from './education.repository.js';
 
+// admin role
 const getAllEducation = async (userId) => {
+  const user = await findUserById(userId);
+
+  if (!user) {
+    throw new ResponseError(404, 'User not found');
+  }
   const educations = await findAllEducation(userId);
+
+  return educations;
+};
+
+const verifEducation = async (id, educationData, userId) => {
+  const user = await findUserById(userId);
+
+  if (!user) {
+    throw new ResponseError(404, 'User not found');
+  }
+  const educationById = await findEducationById(id, userId);
+
+  if (!educationById) {
+    throw new ResponseError(404, 'Education not found');
+  }
+  const eduVerifValidation = await validate(verifValidation, educationData);
+  const educationVerif = await verificatioEducation(id, eduVerifValidation, userId);
+
+  return educationVerif;
+};
+
+// user role
+const getAllEducationByUser = async (userId) => {
+  const educations = await findAllEducationByUser(userId);
 
   return educations;
 };
@@ -85,8 +119,10 @@ const deleteEducationById = async (id, userId) => {
 
 export {
   getAllEducation,
+  getAllEducationByUser,
   getEducationById,
   createEducation,
   updateEducation,
   deleteEducationById,
+  verifEducation,
 };

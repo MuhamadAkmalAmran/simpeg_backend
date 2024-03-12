@@ -9,6 +9,15 @@ const findAllEducation = async (userId) => {
 
   return educations;
 };
+const findAllEducationByUser = async (userId) => {
+  const educations = await prisma.education.findMany({
+    where: {
+      user_id: userId,
+    },
+  });
+
+  return educations;
+};
 
 const insertEducation = async (educationData, userId) => {
   const education = await prisma.education.create({
@@ -64,10 +73,26 @@ const deleteEducation = async (id, userId) => {
   return education;
 };
 
+const verificatioEducation = async (id, educationData, userId) => {
+  const verifEducation = await prisma.education.update({
+    where: {
+      id,
+      user_id: userId,
+    },
+    data: {
+      status_verifikasi: educationData.status_verifikasi,
+      alasan_ditolak: educationData.alasan_ditolak,
+    },
+  });
+  return verifEducation;
+};
+
 export {
   findAllEducation,
+  findAllEducationByUser,
   insertEducation,
   findEducationById,
   editEducation,
   deleteEducation,
+  verificatioEducation,
 };
