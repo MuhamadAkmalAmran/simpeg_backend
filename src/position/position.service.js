@@ -1,3 +1,4 @@
+import { findUserById } from '../user/user.repository.js';
 import ResponseError from '../utils/response-error.js';
 import uploadFile from '../utils/upload-file.js';
 import {
@@ -6,15 +7,50 @@ import {
   updatePositionValidation,
 } from '../validation/position-validation.js';
 import validate from '../validation/validation.js';
+import verifValidation from '../validation/verification-validation.js';
 import {
   deletePositionById,
+  findAllPositions,
   findAllPositionsByUser,
   findPositionById,
   insertPosition,
   updatePositionById,
+  verificationPosition,
 } from './position.repository.js';
 
+// admin role
+
 const getAllPositions = async (userId) => {
+  const user = await findUserById(userId);
+
+  if (!user) {
+    throw new ResponseError(404, 'User not found');
+  }
+  const positions = await findAllPositions(userId);
+
+  return positions;
+};
+
+const verifPosition = async (id, positionData, userId) => {
+  const user = await findUserById(userId);
+
+  if (!user) {
+    throw new ResponseError(404, 'User not found');
+  }
+  const positionById = await findPositionById(id, userId);
+
+  if (!positionById) {
+    throw new ResponseError(404, 'Position not found');
+  }
+  const positionVerifValidation = await validate(verifValidation, positionData);
+  const positionVerif = await verificationPosition(id, positionVerifValidation, userId);
+
+  return positionVerif;
+};
+
+// user role
+
+const getAllPositionsByUser = async (userId) => {
   const positions = await findAllPositionsByUser(userId);
 
   return positions;
@@ -74,7 +110,9 @@ const deletePosition = async (id, userId) => {
 
 export {
   getAllPositions,
+  getAllPositionsByUser,
   createPosition,
   updatePosition,
   deletePosition,
+  verifPosition,
 };

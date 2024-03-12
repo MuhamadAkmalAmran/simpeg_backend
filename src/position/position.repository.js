@@ -1,5 +1,14 @@
 import prisma from '../config/database.js';
 
+const findAllPositions = async (userId) => {
+  const positions = await prisma.position.findMany({
+    where: {
+      user_id: userId,
+    },
+  });
+
+  return positions;
+};
 const findAllPositionsByUser = async (userId) => {
   const positions = await prisma.position.findMany({
     where: {
@@ -65,10 +74,26 @@ const deletePositionById = async (id, userId) => {
   return position;
 };
 
+const verificationPosition = async (id, positionData, userId) => {
+  const verifPosition = await prisma.position.update({
+    where: {
+      id,
+      user_id: userId,
+    },
+    data: {
+      status_verifikasi: positionData.status_verifikasi,
+      alasan_ditolak: positionData.alasan_ditolak,
+    },
+  });
+  return verifPosition;
+};
+
 export {
+  findAllPositions,
   findAllPositionsByUser,
   insertPosition,
   findPositionById,
   updatePositionById,
   deletePositionById,
+  verificationPosition,
 };
