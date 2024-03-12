@@ -1,3 +1,4 @@
+import { findUserById } from '../user/user.repository.js';
 import ResponseError from '../utils/response-error.js';
 import uploadFile from '../utils/upload-file.js';
 import {
@@ -6,14 +7,49 @@ import {
   updateTrainingValidation,
 } from '../validation/training-validation.js';
 import validate from '../validation/validation.js';
+import verifValidation from '../validation/verification-validation.js';
 import {
   deleteTraining,
   editTraining,
+  findAllTraining,
   findAllTrainingByUser,
   findTrainingById, insertTraining,
+  verificationTraining,
 } from './training.repository.js';
 
+// admin role
+
 const getAllTrainings = async (userId) => {
+  const user = await findUserById(userId);
+
+  if (!user) {
+    throw new ResponseError(404, 'User not found');
+  }
+  const titles = await findAllTraining(userId);
+
+  return titles;
+};
+
+const verifTraining = async (id, trainingData, userId) => {
+  const user = await findUserById(userId);
+
+  if (!user) {
+    throw new ResponseError(404, 'User not found');
+  }
+  const trainingById = await findTrainingById(id, userId);
+
+  if (!trainingById) {
+    throw new ResponseError(404, 'Training not found');
+  }
+  const trainingVerifValidation = await validate(verifValidation, trainingData);
+  const trainingVerif = await verificationTraining(id, trainingVerifValidation, userId);
+
+  return trainingVerif;
+};
+
+// user role
+
+const getAllTrainingsByUser = async (userId) => {
   const trainings = await findAllTrainingByUser(userId);
 
   return trainings;
@@ -80,8 +116,10 @@ const deleteTrainingById = async (id, userId) => {
 
 export {
   getAllTrainings,
+  getAllTrainingsByUser,
   getTrainingById,
   createTraining,
   updateTraining,
   deleteTrainingById,
+  verifTraining,
 };

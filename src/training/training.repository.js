@@ -1,5 +1,14 @@
 import prisma from '../config/database.js';
 
+const findAllTraining = async (userId) => {
+  const trainings = await prisma.training.findMany({
+    where: {
+      user_id: userId,
+    },
+  });
+
+  return trainings;
+};
 const findAllTrainingByUser = async (userId) => {
   const trainings = await prisma.training.findMany({
     where: {
@@ -61,10 +70,26 @@ const deleteTraining = async (id, userId) => {
   return training;
 };
 
+const verificationTraining = async (id, trainingData, userId) => {
+  const verifTraining = await prisma.training.update({
+    where: {
+      id,
+      user_id: userId,
+    },
+    data: {
+      status_verifikasi: trainingData.status_verifikasi,
+      alasan_ditolak: trainingData.alasan_ditolak,
+    },
+  });
+  return verifTraining;
+};
+
 export {
+  findAllTraining,
   findAllTrainingByUser,
   findTrainingById,
   insertTraining,
   editTraining,
   deleteTraining,
+  verificationTraining,
 };
