@@ -4,12 +4,48 @@ import validate from '../validation/validation.js';
 import {
   deleteDocument,
   editDocument,
+  findAllDocuments,
   findAllDocumentsByUser,
   findDocumentById,
   insertDocument,
+  verificationDocument,
 } from './document.respository.js';
 import uploadFile from '../utils/upload-file.js';
+import verifValidation from '../validation/verification-validation.js';
+import { findUserById } from '../user/user.repository.js';
 
+// admin role
+const getAllDocuments = async (userId) => {
+  const user = await findUserById(userId);
+
+  if (!user) {
+    throw new ResponseError(404, 'User not found');
+  }
+  const documents = await findAllDocuments(userId);
+
+  return documents;
+};
+
+const verifDocument = async (id, documentData, userId) => {
+  const user = await findUserById(userId);
+
+  if (!user) {
+    throw new ResponseError(404, 'User not found');
+  }
+  const documentById = await findDocumentById(id, userId);
+
+  if (!documentById) {
+    throw new ResponseError(404, 'Document not found');
+  }
+
+  const docVerifValidation = await validate(verifValidation, documentData);
+
+  const documentVerif = await verificationDocument(id, docVerifValidation, userId);
+
+  return documentVerif;
+};
+
+// user role
 const getAllDocumentsByUser = async (userId) => {
   const documents = await findAllDocumentsByUser(userId);
 
@@ -76,8 +112,10 @@ const deleteDocumentById = async (id, userId) => {
 };
 
 export {
+  getAllDocuments,
   getAllDocumentsByUser,
   createDocument,
   updateDocument,
   deleteDocumentById,
+  verifDocument,
 };

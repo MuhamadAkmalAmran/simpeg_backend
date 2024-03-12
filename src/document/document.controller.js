@@ -2,13 +2,48 @@ import express from 'express';
 import {
   createDocument,
   deleteDocumentById,
+  getAllDocuments,
   getAllDocumentsByUser,
   updateDocument,
+  verifDocument,
 } from './document.service.js';
 import { multerErrorHandler, upload } from '../middleware/upload-file-middleware.js';
+import { adminMiddleware } from '../middleware/authentication.middleware.js';
 
 const router = express.Router();
 
+// admin role
+
+router.get('/admin/documents/:userId', adminMiddleware, async (req, res, next) => {
+  try {
+    const id = req.params.userId;
+    const documents = await getAllDocuments(id);
+    res.status(200).json({
+      error: false,
+      documents,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.patch('/admin/documents/:userId/:id', adminMiddleware, async (req, res, next) => {
+  try {
+    const id = req.params.userId;
+    const documentById = req.params.id;
+    const documentData = req.body;
+    const document = await verifDocument(documentById, documentData, id);
+    res.status(200).json({
+      error: false,
+      message: 'Verified Success',
+      data: document,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// user role
 router.get('/documents', async (req, res, next) => {
   try {
     const { id } = req.user;

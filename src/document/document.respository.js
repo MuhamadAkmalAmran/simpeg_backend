@@ -1,5 +1,14 @@
 import prisma from '../config/database.js';
 
+const findAllDocuments = async (userId) => {
+  const documents = await prisma.document.findMany({
+    where: {
+      user_id: userId,
+    },
+  });
+
+  return documents;
+};
 const findAllDocumentsByUser = async (userId) => {
   const documents = await prisma.document.findMany({
     where: {
@@ -58,10 +67,26 @@ const deleteDocument = async (id, userId) => {
   return document;
 };
 
+const verificationDocument = async (id, documenttData, userId) => {
+  const verifDoucment = await prisma.document.update({
+    where: {
+      id,
+      user_id: userId,
+    },
+    data: {
+      status_verifikasi: documenttData.status_verifikasi,
+      alasan_ditolak: documenttData.alasan_ditolak,
+    },
+  });
+  return verifDoucment;
+};
+
 export {
+  findAllDocuments,
   findAllDocumentsByUser,
   insertDocument,
   findDocumentById,
   editDocument,
   deleteDocument,
+  verificationDocument,
 };
