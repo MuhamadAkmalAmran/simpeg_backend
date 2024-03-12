@@ -1,16 +1,52 @@
+import { findUserById } from '../user/user.repository.js';
 import ResponseError from '../utils/response-error.js';
 import uploadFile from '../utils/upload-file.js';
 import { createTitleValidation, getTitleValidation } from '../validation/title-validation.js';
 import validate from '../validation/validation.js';
+import verifValidation from '../validation/verification-validation.js';
 import {
   deleteTitle,
   editTitle,
+  findAllTitles,
   findAllTitlesByUser,
   findTitleById,
   insertTitle,
+  verificationTitle,
 } from './title.repository.js';
 
+// admin role
+
 const getAllTitles = async (userId) => {
+  const user = await findUserById(userId);
+
+  if (!user) {
+    throw new ResponseError(404, 'User not found');
+  }
+  const titles = await findAllTitles(userId);
+
+  return titles;
+};
+
+const verifTitle = async (id, titleData, userId) => {
+  const user = await findUserById(userId);
+
+  if (!user) {
+    throw new ResponseError(404, 'User not found');
+  }
+  const titleById = await findTitleById(id, userId);
+
+  if (!titleById) {
+    throw new ResponseError(404, 'Title not found');
+  }
+  const titleVerifValidation = await validate(verifValidation, titleData);
+  const titleVerif = await verificationTitle(id, titleVerifValidation, userId);
+
+  return titleVerif;
+};
+
+// user role
+
+const getAllTitlesByUser = async (userId) => {
   const titles = await findAllTitlesByUser(userId);
 
   return titles;
@@ -80,8 +116,10 @@ const deleteTitleById = async (id, userId) => {
 
 export {
   getAllTitles,
+  getAllTitlesByUser,
   getTitleById,
   createTitle,
   updateTitle,
   deleteTitleById,
+  verifTitle,
 };

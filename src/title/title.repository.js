@@ -1,5 +1,14 @@
 import prisma from '../config/database.js';
 
+const findAllTitles = async (userId) => {
+  const titles = await prisma.title.findMany({
+    where: {
+      user_id: userId,
+    },
+  });
+
+  return titles;
+};
 const findAllTitlesByUser = async (userId) => {
   const titles = await prisma.title.findMany({
     where: {
@@ -65,10 +74,26 @@ const deleteTitle = async (id, userId) => {
   return title;
 };
 
+const verificationTitle = async (id, titleData, userId) => {
+  const verifTitle = await prisma.title.update({
+    where: {
+      id,
+      user_id: userId,
+    },
+    data: {
+      status_verifikasi: titleData.status_verifikasi,
+      alasan_ditolak: titleData.alasan_ditolak,
+    },
+  });
+  return verifTitle;
+};
+
 export {
+  findAllTitles,
   findAllTitlesByUser,
   findTitleById,
   insertTitle,
   editTitle,
   deleteTitle,
+  verificationTitle,
 };
