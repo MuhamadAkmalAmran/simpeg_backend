@@ -1,5 +1,13 @@
-import prisma from '../db/database.js';
+import prisma from '../config/database.js';
 
+const findAllPerformances = async (userId) => {
+  const performances = await prisma.performance.findMany({
+    where: {
+      user_id: userId,
+    },
+  });
+  return performances;
+};
 const findAllPerformancesByUser = async (userId) => {
   const performances = await prisma.performance.findMany({
     where: {
@@ -54,10 +62,26 @@ const deletePerformance = async (id, userId) => {
   return performance;
 };
 
+const verificationPerformance = async (id, performanceData, userId) => {
+  const verifPerformance = await prisma.performance.update({
+    where: {
+      id,
+      user_id: userId,
+    },
+    data: {
+      status_verifikasi: performanceData.status_verifikasi,
+      alasan_ditolak: performanceData.alasan_ditolak,
+    },
+  });
+  return verifPerformance;
+};
+
 export {
+  findAllPerformances,
   findAllPerformancesByUser,
   findPerformanceById,
   insertPerformance,
   editPerformance,
   deletePerformance,
+  verificationPerformance,
 };

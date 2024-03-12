@@ -3,15 +3,51 @@ import {
   createPerformance,
   deletePerformanceById,
   getAllPerformances,
+  getAllPerformancesByUser,
   updatePerformance,
+  verifPerformance,
 } from './performance.service.js';
+import { adminMiddleware } from '../middleware/authentication.middleware.js';
 
 const router = express.Router();
+
+// admin role
+
+router.get('/admin/performances/:userId', adminMiddleware, async (req, res, next) => {
+  try {
+    const id = req.params.userId;
+    const performances = await getAllPerformances(id);
+    res.status(200).json({
+      status: false,
+      performances,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.patch('/admin/performances/:userId/:id', adminMiddleware, async (req, res, next) => {
+  try {
+    const id = req.params.userId;
+    const performanceById = req.params.id;
+    const performanceData = req.body;
+    const performance = await verifPerformance(performanceById, performanceData, id);
+    res.status(200).json({
+      error: false,
+      message: 'Verified Success',
+      data: performance,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// user role
 
 router.get('/performances', async (req, res, next) => {
   try {
     const { id } = req.user;
-    const performances = await getAllPerformances(id);
+    const performances = await getAllPerformancesByUser(id);
     res.status(200).json({
       status: false,
       performances,
