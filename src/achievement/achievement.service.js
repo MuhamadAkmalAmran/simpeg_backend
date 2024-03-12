@@ -1,3 +1,4 @@
+import { findUserById } from '../user/user.repository.js';
 import ResponseError from '../utils/response-error.js';
 import {
   createAchievementValidation,
@@ -5,15 +6,49 @@ import {
   updateAchievementValidation,
 } from '../validation/achievement-validation.js';
 import validate from '../validation/validation.js';
+import verifValidation from '../validation/verification-validation.js';
 import {
   deleteAchievement,
   editAchievement,
   findAchievementById,
+  findAllAchievements,
   findAllAchievementsByUser,
   insertAchievement,
+  verificationAchievement,
 } from './achievement.repository.js';
 
+// admin role
+
 const getAllAchievements = async (userId) => {
+  const user = await findUserById(userId);
+
+  if (!user) {
+    throw new ResponseError(404, 'User not found');
+  }
+  const achievements = await findAllAchievements(userId);
+  return achievements;
+};
+
+const verifAchievement = async (id, achievementData, userId) => {
+  const user = await findUserById(userId);
+
+  if (!user) {
+    throw new ResponseError(404, 'User not found');
+  }
+  const achievementById = await findAchievementById(id, userId);
+
+  if (!achievementById) {
+    throw new ResponseError(404, 'Achievement not found');
+  }
+  const achievVerifValidation = await validate(verifValidation, achievementData);
+
+  const achievementVerif = await verificationAchievement(id, achievVerifValidation, userId);
+
+  return achievementVerif;
+};
+
+// user role
+const getAllAchievementsByUser = async (userId) => {
   const achievements = await findAllAchievementsByUser(userId);
   return achievements;
 };
@@ -59,8 +94,10 @@ const deleteAchievementById = async (id, userId) => {
 
 export {
   getAllAchievements,
+  getAllAchievementsByUser,
   getAchievementById,
   createAchievement,
   updateAchievement,
   deleteAchievementById,
+  verifAchievement,
 };

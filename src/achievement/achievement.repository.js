@@ -1,5 +1,13 @@
-import prisma from '../db/database.js';
+import prisma from '../config/database.js';
 
+const findAllAchievements = async (userId) => {
+  const achievements = await prisma.achievement.findMany({
+    where: {
+      user_id: userId,
+    },
+  });
+  return achievements;
+};
 const findAllAchievementsByUser = async (userId) => {
   const achievements = await prisma.achievement.findMany({
     where: {
@@ -58,10 +66,26 @@ const deleteAchievement = async (id, userId) => {
   return achievement;
 };
 
+const verificationAchievement = async (id, achievementData, userId) => {
+  const verifAchievement = await prisma.achievement.update({
+    where: {
+      id,
+      user_id: userId,
+    },
+    data: {
+      status_verifikasi: achievementData.status_verifikasi,
+      alasan_ditolak: achievementData.alasan_ditolak,
+    },
+  });
+  return verifAchievement;
+};
+
 export {
+  findAllAchievements,
   findAllAchievementsByUser,
   findAchievementById,
   insertAchievement,
   editAchievement,
   deleteAchievement,
+  verificationAchievement,
 };
