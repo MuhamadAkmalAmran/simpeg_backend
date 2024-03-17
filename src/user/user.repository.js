@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import prisma from '../db/database.js';
+import prisma from '../config/database.js';
 import accessToken from '../utils/jwt.js';
 
 const findAllUsers = async () => {
@@ -10,11 +10,8 @@ const findAllUsers = async () => {
     select: {
       id: true,
       nama: true,
-      profile: {
-        select: {
-          status_kepegawaian: true,
-        },
-      },
+      nip: true,
+      status_kepegawaian: true,
       titles: {
         select: {
           jabatan: true,
@@ -35,13 +32,14 @@ const findUserById = async (id) => {
     select: {
       id: true,
       nama: true,
+      nip: true,
+      status_kepegawaian: true,
       profile: {
         select: {
           tempat_lahir: true,
           tanggal_lahir: true,
           jenis_kelamin: true,
-          Agama: true,
-          status_kepegawaian: true,
+          agama: true,
         },
       },
       titles: {
@@ -61,8 +59,8 @@ const insertUser = async (userData) => {
   const user = await prisma.user.create({
     data: {
       nama: userData.nama,
-      username: userData.username,
-      email: userData.email,
+      nip: userData.nip,
+      status_kepegawaian: userData.status_kepegawaian,
       password: hashPassword,
       // role: userData.role,
       img_url: userData.img_url,
@@ -77,45 +75,55 @@ const insertUser = async (userData) => {
   return user;
 };
 
-const findUserCurrent = async (username) => {
+const findUserCurrent = async (nip) => {
   const user = await prisma.user.findUnique({
     where: {
-      username,
+      nip,
     },
     select: {
-      username: true,
+      id: true,
+      nama: true,
+      nip: true,
       email: true,
       role: true,
+      img_url: true,
+      profile: {
+        select: {
+          gelar_depan: true,
+          gelar_belakang: true,
+        },
+      },
     },
   });
 
   return user;
 };
 
-const findUserByUsername = async (username) => {
+const findUserByNIP = async (nip) => {
   const user = await prisma.user.findUnique({
     where: {
-      username,
+      nip,
     },
   });
 
   return user;
 };
 
-const updateTokenUserByUsername = async (userData, username) => {
+const updateTokenUserByNIP = async (userData, nip) => {
   const token = accessToken({
     id: userData.id,
-    username: userData.username,
+    nip: userData.nip,
     role: userData.role,
   });
   const user = await prisma.user.update({
     where: {
-      username,
+      nip,
     },
     data: {
       token,
     },
     select: {
+      role: true,
       token: true,
     },
   });
@@ -123,16 +131,16 @@ const updateTokenUserByUsername = async (userData, username) => {
   return user;
 };
 
-const deleteToken = async (username) => {
+const deleteToken = async (nip) => {
   const user = await prisma.user.update({
     where: {
-      username,
+      nip,
     },
     data: {
       token: null,
     },
     select: {
-      username: true,
+      nip: true,
     },
   });
   return user;
@@ -147,13 +155,69 @@ const deleteUser = async (id) => {
   return user;
 };
 
+const editUser = async (id, userData) => {
+  const user = await prisma.user.update({
+    where: {
+      id,
+    },
+    data: {
+      email: userData.email,
+      img_url: userData.img_url,
+    },
+  });
+  return user;
+};
+
+const userDashboard = async (nip) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      nip,
+    },
+    select: {
+      nama: true,
+      nip: true,
+      profile: {
+        select: {
+          gelar_depan: true,
+          gelar_belakang: true,
+          tempat_lahir: true,
+          tanggal_lahir: true,
+          alamat: true,
+          nomor_telepon: true,
+        },
+      },
+      positions: {
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: 1,
+      },
+      educations: {
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: 1,
+      },
+      titles: {
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: 1,
+      },
+    },
+  });
+  return user;
+};
+
 export {
   findAllUsers,
   findUserById,
-  findUserByUsername,
+  findUserByNIP,
   insertUser,
   findUserCurrent,
-  updateTokenUserByUsername,
+  updateTokenUserByNIP,
   deleteToken,
   deleteUser,
+  editUser,
+  userDashboard,
 };

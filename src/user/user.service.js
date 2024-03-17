@@ -2,10 +2,13 @@ import bcrypt from 'bcrypt';
 import {
   deleteToken,
   deleteUser,
+  editUser,
   findAllUsers,
   findUserById,
-  findUserByUsername, findUserCurrent, insertUser,
-  updateTokenUserByUsername,
+  findUserByNIP,
+  findUserCurrent, insertUser,
+  updateTokenUserByNIP,
+  userDashboard,
 } from './user.repository.js';
 import validate from '../validation/validation.js';
 import {
@@ -14,6 +17,7 @@ import {
   getUserValidation,
 } from '../validation/user-validation.js';
 import ResponseError from '../utils/response-error.js';
+import { uploadImage } from '../utils/upload-file.js';
 
 const getAllUsers = async () => {
   const users = await findAllUsers();
@@ -21,8 +25,8 @@ const getAllUsers = async () => {
   return users;
 };
 
-const getUserByUsername = async (username) => {
-  const user = await findUserCurrent(username);
+const getUserByNIP = async (nip) => {
+  const user = await findUserCurrent(nip);
   return user;
 };
 
@@ -36,9 +40,9 @@ const getDetailUser = async (id) => {
 };
 
 const createUser = async (userData) => {
-  const existingUserByUsername = await findUserByUsername(userData.username);
+  const existingUserByUsername = await findUserByNIP(userData.nip);
   if (existingUserByUsername) {
-    throw new ResponseError(400, 'Username is already exists.');
+    throw new ResponseError(400, 'NIP is already exists.');
   }
   const userValidation = validate(registerValidation, userData);
   const user = await insertUser(userValidation);
@@ -50,7 +54,7 @@ const loginUser = async (userData) => {
   const userValidation = await validate(loginValidation, userData);
 
   // const usernameValidation = await validate(getUserNameValidation, userData.username);
-  const user = await findUserByUsername(userValidation.username);
+  const user = await findUserByNIP(userValidation.nip);
 
   if (!user) {
     throw new ResponseError(401, 'User does not exist');
@@ -61,13 +65,13 @@ const loginUser = async (userData) => {
     throw new ResponseError(401, 'Username or Password wrong.');
   }
 
-  const updateToken = await updateTokenUserByUsername(user, user.username);
+  const updateToken = await updateTokenUserByNIP(user, user.nip);
 
   return updateToken;
 };
 
-const logoutUser = async (username) => {
-  const userValidation = await validate(getUserValidation, username);
+const logoutUser = async (nip) => {
+  const userValidation = await validate(getUserValidation, nip);
   const user = await deleteToken(userValidation);
 
   return user;
@@ -84,12 +88,35 @@ const deleteUserById = async (id) => {
   return user;
 };
 
+const updateUser = async (id, userData, file) => {
+  const userValidation = await validate(getUserValidation, id);
+  const userById = await findUserById(userValidation);
+  if (!userById) {
+    throw new ResponseError(404, 'User does not exist');
+  }
+
+  const imgUrl = await uploadImage(file);
+  const user = await editUser(id, {
+    id: userData.id,
+    email: userData.email,
+    img_url: imgUrl.img_url,
+  });
+  return user;
+};
+
+const getUserDashboard = async (nip) => {
+  const user = await userDashboard(nip);
+  return user;
+};
+
 export {
   getAllUsers,
   getDetailUser,
   createUser,
   loginUser,
   logoutUser,
-  getUserByUsername,
+  getUserByNIP,
   deleteUserById,
+  updateUser,
+  getUserDashboard,
 };
