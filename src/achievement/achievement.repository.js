@@ -34,6 +34,7 @@ const insertAchievement = async (achievementData, userId) => {
       tingkat: achievementData.tingkat,
       tahun: achievementData.tahun,
       penyelenggara: achievementData.penyelenggara,
+      file_url: achievementData.file_url,
       user_id: userId,
     },
   });
@@ -51,6 +52,7 @@ const editAchievement = async (id, achievementData, userId) => {
       tingkat: achievementData.tingkat,
       tahun: achievementData.tahun,
       penyelenggara: achievementData.penyelenggara,
+      file_url: achievementData.file_url,
     },
   });
   return achievement;

@@ -12,7 +12,7 @@ const app = initializeApp(firebaseConfig);
 
 const storage = getStorage(app);
 
-const uploadFile = async (file) => {
+export const uploadFile = async (file) => {
   try {
     const name = salted(file.originalname, 'SUPER-S@LT!');
     const ext = name + path.extname(file.originalname);
@@ -39,5 +39,29 @@ const uploadFile = async (file) => {
     throw new ResponseError(400, error.message);
   }
 };
+export const uploadImage = async (file) => {
+  try {
+    const name = salted(file.originalname, 'SUPER-S@LT!');
+    const allowedExtensions = ['.png', '.jpg', '.jpeg'];
+    const ext = path.extname(file.originalname).toLowerCase();
+    console.info(ext);
 
-export default uploadFile;
+    if (!allowedExtensions.includes(ext)) {
+      throw new ResponseError(400, 'Hanya dapat mengunggah image .png, .jpg, .jpeg ');
+    }
+
+    const storageRef = ref(storage, `images/${name}${ext}`);
+    const metaData = {
+      contentType: file.mimetype,
+    };
+    const snapshot = await uploadBytesResumable(storageRef, file.buffer, metaData);
+
+    const downloadUrl = await getDownloadURL(snapshot.ref);
+
+    return {
+      img_url: downloadUrl,
+    };
+  } catch (error) {
+    throw new ResponseError(400, error.message);
+  }
+};

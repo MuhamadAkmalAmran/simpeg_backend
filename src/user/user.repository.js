@@ -3,6 +3,9 @@ import prisma from '../config/database.js';
 import accessToken from '../utils/jwt.js';
 
 const findAllUsers = async () => {
+  const page = 1;
+  const perPage = 10;
+  const skip = (page - 1) * perPage;
   const users = await prisma.user.findMany({
     where: {
       role: 'USER',
@@ -17,11 +20,22 @@ const findAllUsers = async () => {
           jabatan: true,
           unit_kerja: true,
         },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: 1,
       },
     },
+    skip,
+    take: perPage,
   });
 
-  return users;
+  return {
+    users,
+    page,
+    totalItem: skip,
+
+  };
 };
 
 const findUserById = async (id) => {
@@ -164,6 +178,14 @@ const editUser = async (id, userData) => {
       email: userData.email,
       img_url: userData.img_url,
     },
+    select: {
+      id: true,
+      nama: true,
+      nip: true,
+      status_kepegawaian: true,
+      email: true,
+      img_url: true,
+    },
   });
   return user;
 };
@@ -176,6 +198,7 @@ const userDashboard = async (nip) => {
     select: {
       nama: true,
       nip: true,
+      img_url: true,
       profile: {
         select: {
           gelar_depan: true,
@@ -193,12 +216,18 @@ const userDashboard = async (nip) => {
         take: 1,
       },
       educations: {
+        select: {
+          jenjang: true,
+        },
         orderBy: {
           createdAt: 'desc',
         },
         take: 1,
       },
       titles: {
+        select: {
+          jabatan: true,
+        },
         orderBy: {
           createdAt: 'desc',
         },

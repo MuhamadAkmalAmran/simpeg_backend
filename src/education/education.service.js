@@ -1,6 +1,6 @@
 import { findUserById } from '../user/user.repository.js';
 import ResponseError from '../utils/response-error.js';
-import uploadFile from '../utils/upload-file.js';
+import { uploadFile } from '../utils/upload-file.js';
 import {
   createEducationValidation,
   getEducationValidation,

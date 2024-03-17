@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import prisma from '../db/database.js';
+import prisma from '../config/database.js';
 
 const secret = process.env.ACCESS_TOKEN;
 
@@ -15,6 +15,7 @@ const authMiddleware = async (req, res, next) => {
     const user = await prisma.user.findFirst({
       where: {
         token,
+        // role: 'USER',
       },
     });
     if (!user) {

@@ -1,5 +1,6 @@
 import { findUserById } from '../user/user.repository.js';
 import ResponseError from '../utils/response-error.js';
+import { uploadFile } from '../utils/upload-file.js';
 import {
   createAchievementValidation,
   getAchievementValidation,
@@ -64,13 +65,22 @@ const getAchievementById = async (id, userId) => {
   return achievement;
 };
 
-const createAchievement = async (achievementData, userId) => {
+const createAchievement = async (achievementData, userId, file) => {
   const achievementValidation = await validate(createAchievementValidation, achievementData);
-  const achievement = await insertAchievement(achievementValidation, userId);
+  const fileUrl = await uploadFile(file);
+
+  const achievement = await insertAchievement({
+    id: achievementValidation.id,
+    nama: achievementValidation.nama,
+    tingkat: achievementValidation.tingkat,
+    tahun: achievementValidation.tahun,
+    penyelenggara: achievementValidation.penyelenggara,
+    file_url: fileUrl.file_url,
+  }, userId);
   return achievement;
 };
 
-const updateAchievement = async (id, achievementData, userId) => {
+const updateAchievement = async (id, achievementData, userId, file) => {
   const achievementValidation = await validate(updateAchievementValidation, achievementData);
 
   const achievementById = await getAchievementById(id, userId);
@@ -78,7 +88,17 @@ const updateAchievement = async (id, achievementData, userId) => {
   if (!achievementById) {
     throw new ResponseError(404, 'Achievement not found.');
   }
-  const achievement = await editAchievement(id, achievementValidation);
+
+  const fileUrl = await uploadFile(file);
+
+  const achievement = await editAchievement(id, {
+    id: achievementValidation.id,
+    nama: achievementValidation.nama,
+    tingkat: achievementValidation.tingkat,
+    tahun: achievementValidation.tahun,
+    penyelenggara: achievementValidation.penyelenggara,
+    file_url: fileUrl.file_url,
+  });
   return achievement;
 };
 

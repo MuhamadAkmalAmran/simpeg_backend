@@ -2,20 +2,22 @@ import Joi from 'joi';
 
 const registerValidation = Joi.object({
   nama: Joi.string().required(),
-  username: Joi.string().length(16).message('Username at least 16 characters').required(),
-  email: Joi.string().email().message('Email invalid').required(),
+  nip: Joi.string().length(18).message({
+    'string.length': 'nip at least 18 characters',
+  }),
+  status_kepegawaian: Joi.string().required(),
   password: Joi.string().length(8).message('Password at least 8 characters').required(),
 });
 
 const loginValidation = Joi.object({
-  username: Joi.string().required(),
-  password: Joi.string().required(),
+  nip: Joi.string().optional(),
+  password: Joi.string().optional(),
 });
 
-const getUserNameValidation = Joi.string().required();
+const getUserValidation = Joi.string().required();
 
 export {
   registerValidation,
   loginValidation,
-  getUserNameValidation,
+  getUserValidation,
 };

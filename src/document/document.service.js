@@ -10,7 +10,7 @@ import {
   insertDocument,
   verificationDocument,
 } from './document.respository.js';
-import uploadFile from '../utils/upload-file.js';
+import { uploadFile } from '../utils/upload-file.js';
 import verifValidation from '../validation/verification-validation.js';
 import { findUserById } from '../user/user.repository.js';
 

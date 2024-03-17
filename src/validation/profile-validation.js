@@ -5,7 +5,7 @@ const updateProfileValidation = Joi.object({
   gelar_belakang: Joi.string().optional(),
   tempat_lahir: Joi.string().optional(),
   tanggal_lahir: Joi.date().optional(),
-  Agama: Joi.string().optional(),
+  agama: Joi.string().optional(),
   golongan_darah: Joi.string().optional(),
   nomor_telepon: Joi.string().optional(),
   alamat: Joi.string().optional(),
