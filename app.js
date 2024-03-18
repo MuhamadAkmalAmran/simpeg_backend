@@ -19,7 +19,6 @@ import { multerErrorHandler } from './src/middleware/upload-file-middleware.js';
 
 dotenv.config();
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 app.use(cors({
   origin: '*',
@@ -47,9 +46,5 @@ app.use('/api', performanceController);
 app.use('/api', documentController);
 app.use(errorMiddleware);
 app.use(multerErrorHandler);
-
-app.listen(PORT, () => {
-  console.log(`Express server listening on localhost: ${PORT}`);
-});
 
 export default app;

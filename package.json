@@ -4,14 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "nodemon app.js",
-    "generate": "npx prisma generate",
-    "migrate": "npx prisma migrate dev",
-    "push": "npx prisma db push",
-    "lint": "eslint ./"
-  },
-  "prisma": {
-    "seed": "node prisma/seed.js"
+    "start": "node index.js"
   },
   "dependencies": {
     "@joi/date": "^2.1.0",
