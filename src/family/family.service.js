@@ -1,4 +1,5 @@
 import { findUserById } from '../user/user.repository.js';
+import { formatDate } from '../utils/date-format.js';
 import ResponseError from '../utils/response-error.js';
 import {
   createFamilyValidation,
@@ -49,7 +50,12 @@ const verifFamily = async (id, familyData, userId) => {
 const getAllFamiliesByUser = async (userId) => {
   const families = await findAllFamiliesByUser(userId);
 
-  return families;
+  const formattedFamilies = families.map((family) => ({
+    ...family,
+    tanggal_lahir: formatDate(family.tanggal_lahir),
+  }));
+
+  return formattedFamilies;
 };
 
 const createFamily = async (familyData, userId) => {
@@ -70,7 +76,19 @@ const updateFamily = async (id, familyData, userId) => {
 
   const family = await editFamily(familyValidation, familyData);
 
-  return family;
+  return {
+    id: family.id,
+    nik: family.nik,
+    nama: family.nama,
+    tempat: family.tempat,
+    tanggal_lahir: formatDate(familyData.tanggal_lahir),
+    jenis_kelamin: family.jenis_kelamin,
+    agama: family.agama,
+    hubungan_kel: family.hubungan_kel,
+    status_verifikasi: family.status_verifikasi,
+    alasan_ditolak: family.alasan_ditolak,
+    user_id: family.user_id,
+  };
 };
 
 const deleteFamilyById = async (id, userId) => {

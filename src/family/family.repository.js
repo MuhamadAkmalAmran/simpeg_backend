@@ -1,5 +1,6 @@
 // import { format, formatISO, parse } from 'date-fns';
 import prisma from '../config/database.js';
+import { formatDate, validDate } from '../utils/date-format.js';
 
 const findAllFamilies = async (userId) => {
   const families = await prisma.family.findMany({
@@ -21,13 +22,13 @@ const findAllFamiliesByUser = async (userId) => {
 };
 
 const insertFamily = async (familyData, userId) => {
-  // const tanggalLahir = parse(familyData.tanggal_lahir, 'dd-MM-yyyy');
+  const tanggalLahir = validDate(familyData.tanggal_lahir);
   const family = await prisma.family.create({
     data: {
       nik: familyData.nik,
       nama: familyData.nama,
       tempat: familyData.tempat,
-      tanggal_lahir: familyData.tanggal_lahir,
+      tanggal_lahir: tanggalLahir,
       jenis_kelamin: familyData.jenis_kelamin,
       agama: familyData.agama,
       hubungan_kel: familyData.hubungan_kel,
@@ -35,7 +36,17 @@ const insertFamily = async (familyData, userId) => {
     },
   });
 
-  return family;
+  return {
+    id: family.id,
+    nikak: family.nik,
+    nama: family.nama,
+    tempat: family.tempat,
+    tanggalLahir: formatDate(family.tanggal_lahir),
+    jenis_kelamin: family.jenis_kelamin,
+    agama: family.agama,
+    hubungan_kel: family.hubungan_kel,
+    user_id: family.user_id,
+  };
 };
 
 const findFamilyById = async (id, userId) => {
@@ -50,6 +61,7 @@ const findFamilyById = async (id, userId) => {
 };
 
 const editFamily = async (id, familyData, userId) => {
+  const tanggalLahir = validDate(familyData.tanggal_lahir);
   const family = await prisma.family.update({
     where: {
       id,
@@ -59,14 +71,24 @@ const editFamily = async (id, familyData, userId) => {
       nik: familyData.nik,
       nama: familyData.nama,
       tempat: familyData.tempat,
-      tanggal_lahir: familyData.tanggal_lahir,
+      tanggal_lahir: tanggalLahir,
       jenis_kelamin: familyData.jenis_kelamin,
       agama: familyData.agama,
       hubungan_kel: familyData.hubungan_kel,
     },
   });
 
-  return family;
+  return {
+    id: family.id,
+    nikak: family.nik,
+    nama: family.nama,
+    tempat: family.tempat,
+    tanggalLahir: formatDate(family.tanggal_lahir),
+    jenis_kelamin: family.jenis_kelamin,
+    agama: family.agama,
+    hubungan_kel: family.hubungan_kel,
+    user_id: family.user_id,
+  };
 };
 
 const deleteFamily = async (id, userId) => {

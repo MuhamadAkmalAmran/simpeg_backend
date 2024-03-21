@@ -63,8 +63,9 @@ router.post('/families', async (req, res, next) => {
     const familyData = req.body;
     const family = await createFamily(familyData, id);
     res.status(201).json({
-      data: family,
+      error: false,
       message: 'Family created successfully',
+      data: family,
     });
   } catch (error) {
     next(error);
@@ -95,6 +96,7 @@ router.delete('/families/:id', async (req, res, next) => {
     await deleteFamilyById(familyId, id);
 
     res.status(200).json({
+      error: false,
       message: 'Family deleted successfully',
     });
   } catch (error) {
