@@ -102,6 +102,7 @@ router.delete('/positions/:id', async (req, res, next) => {
     await deletePosition(positionById);
 
     res.status(200).json({
+      error: false,
       message: 'Position deleted successfully.',
     });
   } catch (error) {

@@ -1,5 +1,5 @@
 import { findUserById } from '../user/user.repository.js';
-import { formatDate } from '../utils/date-format.js';
+import { formatDate, validDate } from '../utils/date-format.js';
 import ResponseError from '../utils/response-error.js';
 import { uploadFile } from '../utils/upload-file.js';
 import {
@@ -67,14 +67,18 @@ const getAllPositionsByUser = async (userId) => {
 const createPosition = async (positionData, userId, file) => {
   const positionValidation = await validate(createPositionValidation, positionData);
 
+  // Deklarasi valid Date
+  const tanggalSK = validDate(positionData.tanggal_sk);
+  const TMT = validDate(positionData.tmt);
+
   // Deklarasi Upload file
   const fileUrl = await uploadFile(file);
 
   const position = await insertPosition({
     id: positionValidation.id,
     no_sk: positionValidation.no_sk,
-    tanggal_sk: positionValidation.tanggal_sk,
-    tmt: positionValidation.tmt,
+    tanggal_sk: tanggalSK,
+    tmt: TMT,
     gaji_pokok: positionValidation.gaji_pokok,
     jenis_sk: positionValidation.jenis_sk,
     file_url: fileUrl.file_url,
@@ -83,8 +87,8 @@ const createPosition = async (positionData, userId, file) => {
   return {
     id: position.id,
     no_sk: position.no_sk,
-    tanggal_sk: formatDate(positionValidation.tanggal_sk),
-    tmt: formatDate(positionValidation.tmt),
+    tanggal_sk: formatDate(position.tanggal_sk),
+    tmt: formatDate(position.tmt),
     jenis_sk: position.jenis_sk,
     gaji_pokok: position.gaji_pokok,
     file_url: position.file_url,
