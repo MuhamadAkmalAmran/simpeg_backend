@@ -70,9 +70,7 @@ router.post('/positions', upload, multerErrorHandler, async (req, res, next) => 
     res.status(201).json({
       status: false,
       message: 'Position created successfully.',
-      data: {
-        position,
-      },
+      data: position,
     });
   } catch (error) {
     next(error);
