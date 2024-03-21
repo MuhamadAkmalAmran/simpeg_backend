@@ -106,13 +106,17 @@ const updatePosition = async (id, positionData, userId, file) => {
 
   const positionValidation = await validate(updatePositionValidation, positionData);
 
+  // Deklarasi valid Date
+  const tanggalSK = positionData.tanggal_sk ? validDate(positionData.tanggal_sk) : positionById.tanggal_sk;
+  const TMT = positionData.tmt ? validDate(positionData.tmt) : positionById.tmt;
+
   const fileUrl = await uploadFile(file);
 
   const position = await updatePositionById(id, {
     id: positionValidation.id,
     no_sk: positionValidation.no_sk,
-    tanggal_sk: positionValidation.tanggal_sk,
-    tmt: positionValidation.tmt,
+    tanggal_sk: tanggalSK,
+    tmt: TMT,
     gaji_pokok: positionValidation.gaji_pokok,
     jenis_sk: positionValidation.jenis_sk,
     file_url: fileUrl.file_url,
@@ -121,8 +125,8 @@ const updatePosition = async (id, positionData, userId, file) => {
   return {
     id: position.id,
     no_sk: position.no_sk,
-    tanggal_sk: formatDate(positionValidation.tanggal_sk),
-    tmt: formatDate(positionValidation.tmt),
+    tanggal_sk: formatDate(position.tanggal_sk),
+    tmt: formatDate(position.tmt),
     jenis_sk: position.jenis_sk,
     gaji_pokok: position.gaji_pokok,
     file_url: position.file_url,
