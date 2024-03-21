@@ -1,4 +1,3 @@
-import { format } from 'date-fns';
 import prisma from '../config/database.js';
 
 const findAllTitles = async (userId) => {
@@ -55,7 +54,7 @@ const editTitle = async (id, titleData, userId) => {
     data: {
       jabatan: titleData.jabatan,
       unit_kerja: titleData.unit_kerja,
-      tmt: format(titleData.tmt, 'dd/MM/yyyy'),
+      tmt: titleData.tmt,
       tanggal_berakhir: titleData.tanggal_berakhir,
       no_sk: titleData.no_sk,
       tanggal_sk: titleData.tanggal_sk,

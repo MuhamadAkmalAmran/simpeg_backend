@@ -1,7 +1,8 @@
 import { findUserById } from '../user/user.repository.js';
+import { formatDate, validDate } from '../utils/date-format.js';
 import ResponseError from '../utils/response-error.js';
 import { uploadFile } from '../utils/upload-file.js';
-import { createTitleValidation, getTitleValidation } from '../validation/title-validation.js';
+import { createTitleValidation, getTitleValidation, updateTitleValidation } from '../validation/title-validation.js';
 import validate from '../validation/validation.js';
 import verifValidation from '../validation/verification-validation.js';
 import {
@@ -49,7 +50,15 @@ const verifTitle = async (id, titleData, userId) => {
 const getAllTitlesByUser = async (userId) => {
   const titles = await findAllTitlesByUser(userId);
 
-  return titles;
+  // Date Format on several attributes
+  const formattedTitles = titles.map((title) => ({
+    ...title,
+    tmt: formatDate(title.tmt),
+    tanggal_berakhir: formatDate(title.tanggal_berakhir),
+    tanggal_sk: formatDate(title.tanggal_sk),
+  }));
+
+  return formattedTitles;
 };
 
 const getTitleById = async (id, userId) => {
@@ -63,42 +72,75 @@ const getTitleById = async (id, userId) => {
 
 const createTitle = async (titleData, userId, file) => {
   const titleValidation = await validate(createTitleValidation, titleData);
+
+  const TMT = validDate(titleData.tmt);
+  const tanggalSK = validDate(titleData.tanggal_sk);
+  const tanggalBerakhir = validDate(titleData.tanggal_berakhir);
+
   const fileUrl = await uploadFile(file);
   const title = await insertTitle({
     id: titleValidation.id,
     jabatan: titleValidation.jabatan,
     unit_kerja: titleValidation.unit_kerja,
-    tmt: titleValidation.tmt,
-    tanggal_berakhir: titleValidation.tanggal_berakhir,
+    tmt: TMT,
+    tanggal_berakhir: tanggalBerakhir,
     no_sk: titleValidation.no_sk,
-    tanggal_sk: titleValidation.tanggal_sk,
+    tanggal_sk: tanggalSK,
     file_url: fileUrl.file_url,
+    user_id: titleValidation.user_id,
   }, userId);
 
-  return title;
+  return {
+    id: title.id,
+    jabatan: title.jabatan,
+    unit_kerja: title.unit_kerja,
+    tmt: formatDate(TMT),
+    tanggal_berakhir: formatDate(tanggalBerakhir),
+    no_sk: title.no_sk,
+    tanggal_sk: formatDate(tanggalSK),
+    file_url: fileUrl.file_url,
+    user_id: title.user_id,
+  };
 };
 
 const updateTitle = async (id, titleData, userId, file) => {
-  const titleValidation = await validate(getTitleValidation, id);
-  const titleById = await findTitleById(id, userId);
+  const titleId = await validate(getTitleValidation, id);
+  const titleById = await findTitleById(titleId, userId);
 
   if (!titleById) {
     throw new ResponseError(404, 'Title not found.');
   }
+
+  const titleValidation = await validate(updateTitleValidation, titleData);
+  const TMT = titleData.tmt ? validDate(titleData.tmt) : titleById.tmt;
+  const tanggalBerakhir = titleData.tanggal_berakhir
+    ? validDate(titleData.tanggal_berakhir)
+    : titleById.tanggal_berakhir;
+  const tanggalSK = titleData.tanggal_sk ? validDate(titleData.tanggal_sk) : titleById.tanggal_sk;
+
   const fileUrl = await uploadFile(file);
 
-  const title = await editTitle(titleValidation, {
-    id: titleData.id,
-    jabatan: titleData.jabatan,
-    unit_kerja: titleData.unit_kerja,
-    tmt: titleData.tmt,
-    tanggal_berakhir: titleData.tanggal_berakhir,
-    no_sk: titleData.no_sk,
-    tanggal_sk: titleData.tanggal_sk,
+  const title = await editTitle(titleId, {
+    jabatan: titleValidation.jabatan,
+    unit_kerja: titleValidation.unit_kerja,
+    tmt: TMT,
+    tanggal_berakhir: tanggalBerakhir,
+    no_sk: titleValidation.no_sk,
+    tanggal_sk: tanggalSK,
     file_url: fileUrl.file_url,
-  });
+  }, userId);
 
-  return title;
+  return {
+    id: title.id,
+    jabatan: title.jabatan,
+    unit_kerja: title.unit_kerja,
+    tmt: formatDate(title.tmt),
+    tanggal_berakhir: formatDate(title.tanggal_berakhir),
+    no_sk: title.no_sk,
+    tanggal_sk: formatDate(title.tanggal_sk),
+    file_url: fileUrl.file_url,
+    user_id: title.user_id,
+  };
 };
 
 const deleteTitleById = async (id, userId) => {
