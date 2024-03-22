@@ -5,6 +5,9 @@ const findAllPerformances = async (userId) => {
     where: {
       user_id: userId,
     },
+    orderBy: {
+      tahun: 'desc',
+    },
   });
   return performances;
 };
@@ -12,6 +15,9 @@ const findAllPerformancesByUser = async (userId) => {
   const performances = await prisma.performance.findMany({
     where: {
       user_id: userId,
+    },
+    orderBy: {
+      tahun: 'desc',
     },
   });
   return performances;
@@ -32,6 +38,8 @@ const insertPerformance = async (performanceData, userId) => {
     data: {
       nilai_kerja: performanceData.nilai_kerja,
       predikat: performanceData.predikat,
+      tahun: performanceData.tahun,
+      file_url: performanceData.file_url,
       user_id: userId,
     },
   });
@@ -47,6 +55,8 @@ const editPerformance = async (id, performanceData, userId) => {
     data: {
       nilai_kerja: performanceData.nilai_kerja,
       predikat: performanceData.predikat,
+      tahun: performanceData.tahun,
+      file_url: performanceData.file_url,
     },
   });
   return performance;

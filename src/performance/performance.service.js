@@ -12,6 +12,7 @@ import {
 } from './performance.repository.js';
 import { findUserById } from '../user/user.repository.js';
 import verifValidation from '../validation/verification-validation.js';
+import { uploadFile } from '../utils/upload-file.js';
 
 // admin role
 
@@ -54,19 +55,33 @@ const getPerformanceById = async (id) => {
   return performance;
 };
 
-const createPerformance = async (performanceData, userId) => {
+const createPerformance = async (performanceData, userId, file) => {
   const performanceValidation = validate(createPerformanceValidation, performanceData);
-  const performance = await insertPerformance(performanceValidation, userId);
+  const fileUrl = await uploadFile(file);
+  const performance = await insertPerformance({
+    id: performanceValidation.id,
+    nilai_kerja: performanceValidation.nilai_kerja,
+    predikat: performanceValidation.predikat,
+    tahun: performanceValidation.tahun,
+    file_url: fileUrl.file_url,
+  }, userId);
   return performance;
 };
 
-const updatePerformance = async (id, performanceData) => {
+const updatePerformance = async (id, performanceData, file) => {
   const performanceById = await findPerformanceById(id);
   if (!performanceById) {
     throw new ResponseError(404, 'Performances not found.');
   }
   const performanceValidation = validate(updatePerformanceValidation, performanceData);
-  const performance = await editPerformance(id, performanceValidation);
+  const fileUrl = await uploadFile(file);
+  const performance = await editPerformance(id, {
+    id: performanceValidation.id,
+    nilai_kerja: performanceValidation.nilai_kerja,
+    predikat: performanceValidation.predikat,
+    tahun: performanceValidation.tahun,
+    file_url: fileUrl.file_url,
+  });
   return performance;
 };
 
