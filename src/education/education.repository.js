@@ -19,6 +19,44 @@ const findAllEducationByUser = async (userId) => {
   return educations;
 };
 
+const ChartEducation = async () => {
+  const totalSD = await prisma.education.count({
+    where: {
+      jenjang: {
+        startsWith: 'SD',
+      },
+    },
+  });
+  const totalSMP = await prisma.education.count({
+    where: {
+      jenjang: {
+        startsWith: 'SMP',
+      },
+    },
+  });
+  const totalSMA = await prisma.education.count({
+    where: {
+      jenjang: {
+        startsWith: 'SMA',
+      },
+    },
+  });
+  const totalS1 = await prisma.education.count({
+    where: {
+      jenjang: {
+        startsWith: 'S1',
+      },
+    },
+  });
+
+  return {
+    totalSD,
+    totalSMP,
+    totalSMA,
+    totalS1,
+  };
+};
+
 const insertEducation = async (educationData, userId) => {
   const education = await prisma.education.create({
     data: {
@@ -95,4 +133,5 @@ export {
   editEducation,
   deleteEducation,
   verificationEducation,
+  ChartEducation,
 };
