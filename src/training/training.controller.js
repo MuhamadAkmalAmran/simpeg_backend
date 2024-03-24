@@ -12,30 +12,30 @@ const router = express.Router();
 
 // admin role
 
-router.get('/admin/trainings/:userId', adminMiddleware, async (req, res, next) => {
+router.get('/trainings/:userId', adminMiddleware, async (req, res, next) => {
   try {
     const id = req.params.userId;
-    const trainigs = await getAllTrainings(id);
+    const trainings = await getAllTrainings(id);
 
     res.status(200).json({
       status: false,
-      trainigs,
+      trainings,
     });
   } catch (error) {
     next(error);
   }
 });
 
-router.patch('/admin/trainings/:userId/:id', adminMiddleware, async (req, res, next) => {
+router.patch('/trainings/:userId/:id', adminMiddleware, async (req, res, next) => {
   try {
     const id = req.params.userId;
     const trainingById = req.params.id;
     const trainingData = req.body;
-    const trainigs = await verifTraining(trainingById, trainingData, id);
+    const trainings = await verifTraining(trainingById, trainingData, id);
     res.status(200).json({
       error: false,
       message: 'Verified Success',
-      data: trainigs,
+      data: trainings,
     });
   } catch (error) {
     next(error);
@@ -47,10 +47,10 @@ router.patch('/admin/trainings/:userId/:id', adminMiddleware, async (req, res, n
 router.get('/trainings', async (req, res, next) => {
   try {
     const { id } = req.user;
-    const trainigs = await getAllTrainingsByUser(id);
+    const trainings = await getAllTrainingsByUser(id);
     res.status(200).json({
       status: false,
-      trainigs,
+      trainings,
     });
   } catch (error) {
     next(error);

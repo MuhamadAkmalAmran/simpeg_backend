@@ -4,6 +4,9 @@ const findAllTraining = async (userId) => {
   const trainings = await prisma.training.findMany({
     where: {
       user_id: userId,
+      user: {
+        role: 'USER',
+      },
     },
   });
 
@@ -75,6 +78,9 @@ const verificationTraining = async (id, trainingData, userId) => {
     where: {
       id,
       user_id: userId,
+      user: {
+        role: 'USER',
+      },
     },
     data: {
       status_verifikasi: trainingData.status_verifikasi,
