@@ -14,7 +14,7 @@ const router = express.Router();
 
 // admin role
 
-router.get('/admin/titles/:userId', adminMiddleware, async (req, res, next) => {
+router.get('/titles/:userId', adminMiddleware, async (req, res, next) => {
   try {
     const id = req.params.userId;
     const titles = await getAllTitles(id);
@@ -28,7 +28,7 @@ router.get('/admin/titles/:userId', adminMiddleware, async (req, res, next) => {
   }
 });
 
-router.patch('/admin/titles/:userId/:id', adminMiddleware, async (req, res, next) => {
+router.patch('/titles/:userId/:id', adminMiddleware, async (req, res, next) => {
   try {
     const id = req.params.userId;
     const titleById = req.params.id;

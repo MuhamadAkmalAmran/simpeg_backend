@@ -4,6 +4,9 @@ const findAllTitles = async (userId) => {
   const titles = await prisma.title.findMany({
     where: {
       user_id: userId,
+      user: {
+        role: 'USER',
+      },
     },
   });
 
@@ -79,6 +82,9 @@ const verificationTitle = async (id, titleData, userId) => {
     where: {
       id,
       user_id: userId,
+      user: {
+        role: 'USER',
+      },
     },
     data: {
       status_verifikasi: titleData.status_verifikasi,
