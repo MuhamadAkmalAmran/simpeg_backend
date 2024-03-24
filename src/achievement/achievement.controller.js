@@ -13,7 +13,7 @@ import { multerErrorHandler, upload } from '../middleware/upload-file-middleware
 const router = express.Router();
 
 // admin role
-router.get('/admin/achievements/:userId', adminMiddleware, async (req, res, next) => {
+router.get('/achievements/:userId', adminMiddleware, async (req, res, next) => {
   try {
     const id = req.params.userId;
     const achievements = await getAllAchievements(id);
@@ -26,7 +26,7 @@ router.get('/admin/achievements/:userId', adminMiddleware, async (req, res, next
   }
 });
 
-router.patch('/admin/achievements/:userId/:id', adminMiddleware, async (req, res, next) => {
+router.patch('/achievements/:userId/:id', adminMiddleware, async (req, res, next) => {
   try {
     // const { role } = req.user;
     const id = req.params.userId;

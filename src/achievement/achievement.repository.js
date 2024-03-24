@@ -4,6 +4,9 @@ const findAllAchievements = async (userId) => {
   const achievements = await prisma.achievement.findMany({
     where: {
       user_id: userId,
+      user: {
+        role: 'USER',
+      },
     },
   });
   return achievements;
@@ -73,6 +76,9 @@ const verificationAchievement = async (id, achievementData, userId) => {
     where: {
       id,
       user_id: userId,
+      user: {
+        role: 'USER',
+      },
     },
     data: {
       status_verifikasi: achievementData.status_verifikasi,
