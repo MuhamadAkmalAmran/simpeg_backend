@@ -5,6 +5,9 @@ const findAllFamilies = async (userId) => {
   const families = await prisma.family.findMany({
     where: {
       user_id: userId,
+      user: {
+        role: 'USER',
+      },
     },
   });
 
@@ -83,6 +86,9 @@ const verificationFamily = async (id, familyData, userId) => {
     where: {
       id,
       user_id: userId,
+      user: {
+        role: 'USER',
+      },
     },
     data: {
       status_verifikasi: familyData.status_verifikasi,

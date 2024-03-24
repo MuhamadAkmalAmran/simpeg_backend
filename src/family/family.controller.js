@@ -12,7 +12,7 @@ import { adminMiddleware } from '../middleware/authentication.middleware.js';
 const router = express.Router();
 
 // admin role
-router.get('/admin/families/:userId', adminMiddleware, async (req, res, next) => {
+router.get('/families/:userId', adminMiddleware, async (req, res, next) => {
   try {
     const id = req.params.userId;
     const families = await getAllFamilies(id);
@@ -25,7 +25,7 @@ router.get('/admin/families/:userId', adminMiddleware, async (req, res, next) =>
   }
 });
 
-router.patch('/admin/families/:userId/:id', adminMiddleware, async (req, res, next) => {
+router.patch('/families/:userId/:id', adminMiddleware, async (req, res, next) => {
   try {
     // const { role } = req.user;
     const id = req.params.userId;

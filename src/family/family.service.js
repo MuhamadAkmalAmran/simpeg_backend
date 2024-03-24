@@ -77,7 +77,7 @@ const createFamily = async (familyData, userId) => {
 
   return {
     id: family.id,
-    nikak: family.nik,
+    nik: family.nik,
     nama: family.nama,
     tempat: family.tempat,
     tanggal_lahir: formatDate(family.tanggal_lahir),
