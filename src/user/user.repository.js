@@ -389,6 +389,33 @@ const userDashboard = async (nip) => {
   return user;
 };
 
+const editUserByAdmin = async (id, userData) => {
+  const user = await prisma.user.update({
+    where: {
+      id,
+    },
+    data: {
+      nama: userData.nama,
+      nip: userData.nip,
+      status_kepegawaian: userData.status_kepegawaian,
+      unit_kerja_id: userData.unit_kerja_id,
+      // password: userData.password,
+    },
+    select: {
+      id: true,
+      nama: true,
+      nip: true,
+      status_kepegawaian: true,
+      unit_kerja: {
+        select: {
+          nama: true,
+        },
+      },
+    },
+  });
+  return user;
+};
+
 export {
   findAllUsers,
   findUserById,
@@ -401,4 +428,5 @@ export {
   editUser,
   userDashboard,
   findChart,
+  editUserByAdmin,
 };

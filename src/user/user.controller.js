@@ -9,6 +9,7 @@ import {
   updateUser,
   getUserDashboard,
   getChart,
+  updateUserByAdmin,
 } from './user.service.js';
 import { multerErrorHandler, upload } from '../middleware/upload-file-middleware.js';
 import { adminMiddleware, authMiddleware } from '../middleware/authentication.middleware.js';
@@ -32,10 +33,19 @@ router.get('/users', adminMiddleware, async (req, res, next) => {
   }
 });
 
-router.get('/users/current', authMiddleware, async (req, res, next) => {
+router.get('/users/count', adminMiddleware, async (req, res, next) => {
   try {
-    const { nip } = req.user;
-    const user = await getUserByNIP(nip);
+    const user = await getChart();
+    res.status(200).json(user);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/users/:id', adminMiddleware, async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+    const user = await getDetailUser(userId);
     res.status(200).json({
       error: false,
       user,
@@ -45,10 +55,29 @@ router.get('/users/current', authMiddleware, async (req, res, next) => {
   }
 });
 
-router.get('/users/count', adminMiddleware, async (req, res, next) => {
+router.patch('/users/:id', adminMiddleware, async (req, res, next) => {
   try {
-    const user = await getChart();
-    res.status(200).json(user);
+    const userId = req.params.id;
+    const userData = req.body;
+    const user = await updateUserByAdmin(userId, userData);
+    res.status(200).json({
+      error: false,
+      message: 'User updated',
+      data: user,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/users/current', authMiddleware, async (req, res, next) => {
+  try {
+    const { nip } = req.user;
+    const user = await getUserByNIP(nip);
+    res.status(200).json({
+      error: false,
+      user,
+    });
   } catch (error) {
     next(error);
   }
@@ -74,19 +103,6 @@ router.get('/users/dashboard', authMiddleware, async (req, res, next) => {
     res.status(200).json({
       error: false,
       data: user,
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.get('/users/:id', adminMiddleware, async (req, res, next) => {
-  try {
-    const userId = req.params.id;
-    const user = await getDetailUser(userId);
-    res.status(200).json({
-      error: false,
-      user,
     });
   } catch (error) {
     next(error);
@@ -150,8 +166,9 @@ router.delete('/users/:id', async (req, res, next) => {
   }
 });
 
-router.patch('/users/:id', upload, multerErrorHandler, async (req, res, next) => {
+router.patch('/users/:id', authMiddleware, upload, multerErrorHandler, async (req, res, next) => {
   try {
+    // const { id } = req.user;
     const userId = req.params.id;
     const userData = req.body;
     const userImg = req.file;

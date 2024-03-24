@@ -3,6 +3,7 @@ import {
   deleteToken,
   deleteUser,
   editUser,
+  editUserByAdmin,
   findAllUsers,
   findChart,
   findUserById,
@@ -18,6 +19,8 @@ import {
   loginValidation,
   getUserValidation,
   filterValidation,
+  upadateUserValidation,
+  upadateByUserValidation,
 } from '../validation/user-validation.js';
 import ResponseError from '../utils/response-error.js';
 import { uploadImage } from '../utils/upload-file.js';
@@ -94,18 +97,23 @@ const deleteUserById = async (id) => {
 };
 
 const updateUser = async (id, userData, file) => {
-  const userValidation = await validate(getUserValidation, id);
-  const userById = await findUserById(userValidation);
+  const userId = await validate(getUserValidation, id);
+  const userById = await findUserById(userId);
   if (!userById) {
     throw new ResponseError(404, 'User does not exist');
   }
 
+  const userValidation = await validate(upadateByUserValidation, userData);
+
   const imgUrl = await uploadImage(file);
-  const user = await editUser(id, {
-    id: userData.id,
-    email: userData.email,
-    img_url: imgUrl.img_url,
-  });
+  const user = await editUser(
+    id,
+    {
+      id: userValidation.id,
+      email: userValidation.email,
+      img_url: imgUrl.img_url,
+    },
+  );
   return user;
 };
 
@@ -123,6 +131,20 @@ const getChart = async () => {
   };
 };
 
+const updateUserByAdmin = async (id, userData) => {
+  const userId = await validate(getUserValidation, id);
+
+  const userById = await findUserById(userId);
+  if (!userById) {
+    throw new ResponseError(404, 'User not found');
+  }
+
+  const userValidation = await validate(upadateUserValidation, userData);
+
+  const user = await editUserByAdmin(userId, userValidation);
+  return user;
+};
+
 export {
   getAllUsers,
   getDetailUser,
@@ -134,4 +156,5 @@ export {
   updateUser,
   getUserDashboard,
   getChart,
+  updateUserByAdmin,
 };
