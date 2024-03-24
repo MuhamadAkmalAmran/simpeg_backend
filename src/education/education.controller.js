@@ -14,7 +14,7 @@ const router = express.Router();
 
 // admin role
 
-router.get('/admin/educations/:userId', adminMiddleware, async (req, res, next) => {
+router.get('/educations/:userId', adminMiddleware, async (req, res, next) => {
   try {
     // const { id } = req.user;
     const id = req.params.userId;
@@ -28,7 +28,7 @@ router.get('/admin/educations/:userId', adminMiddleware, async (req, res, next) 
   }
 });
 
-router.patch('/admin/educations/:userId/:id', adminMiddleware, async (req, res, next) => {
+router.patch('/educations/:userId/:id', adminMiddleware, async (req, res, next) => {
   try {
     // const { role } = req.user;
     const id = req.params.userId;

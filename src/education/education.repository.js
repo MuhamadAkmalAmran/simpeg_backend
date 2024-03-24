@@ -4,6 +4,9 @@ const findAllEducation = async (userId) => {
   const educations = await prisma.education.findMany({
     where: {
       user_id: userId,
+      user: {
+        role: 'USER',
+      },
     },
   });
 
@@ -116,6 +119,9 @@ const verificationEducation = async (id, educationData, userId) => {
     where: {
       id,
       user_id: userId,
+      user: {
+        role: 'USER',
+      },
     },
     data: {
       status_verifikasi: educationData.status_verifikasi,
