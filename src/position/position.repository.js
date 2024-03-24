@@ -4,6 +4,9 @@ const findAllPositions = async (userId) => {
   const positions = await prisma.position.findMany({
     where: {
       user_id: userId,
+      user: {
+        role: 'USER',
+      },
     },
   });
 
@@ -81,6 +84,9 @@ const verificationPosition = async (id, positionData, userId) => {
     where: {
       id,
       user_id: userId,
+      user: {
+        role: 'USER',
+      },
     },
     data: {
       status_verifikasi: positionData.status_verifikasi,
