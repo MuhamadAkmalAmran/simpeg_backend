@@ -4,6 +4,9 @@ const findAllPerformances = async (userId) => {
   const performances = await prisma.performance.findMany({
     where: {
       user_id: userId,
+      user: {
+        role: 'USER',
+      },
     },
     orderBy: {
       tahun: 'desc',
@@ -77,6 +80,9 @@ const verificationPerformance = async (id, performanceData, userId) => {
     where: {
       id,
       user_id: userId,
+      user: {
+        role: 'USER',
+      },
     },
     data: {
       status_verifikasi: performanceData.status_verifikasi,
