@@ -4,6 +4,9 @@ const findAllDocuments = async (userId) => {
   const documents = await prisma.document.findMany({
     where: {
       user_id: userId,
+      user: {
+        role: 'USER',
+      },
     },
   });
 
@@ -72,6 +75,9 @@ const verificationDocument = async (id, documenttData, userId) => {
     where: {
       id,
       user_id: userId,
+      user: {
+        role: 'USER',
+      },
     },
     data: {
       status_verifikasi: documenttData.status_verifikasi,
