@@ -2,23 +2,69 @@ import bcrypt from 'bcrypt';
 import prisma from '../config/database.js';
 import accessToken from '../utils/jwt.js';
 
-const findAllUsers = async () => {
-  const page = 1;
-  const perPage = 10;
-  const skip = (page - 1) * perPage;
+const findAllUsers = async (userData) => {
+  const size = 10;
+  const skip = (userData.page - 1) * size;
+
+  const filters = [];
+
+  if (userData.nama) {
+    filters.push({
+      nama: userData.nama,
+    });
+  }
+  if (userData.status_kepegawaian) {
+    filters.push({
+      status_kepegawaian: userData.status_kepegawaian,
+    });
+  }
+  if (userData.unit_kerja) {
+    filters.push({
+      unit_kerja: {
+        nama: {
+          contains: userData.unit_kerja,
+        },
+      },
+    });
+  }
+  if (userData.jabatan) {
+    filters.push({
+      titles: {
+        some: {
+          jabatan: {
+            contains: userData.jabatan,
+          },
+        },
+      },
+    });
+  }
+
   const users = await prisma.user.findMany({
     where: {
       role: 'USER',
+      AND: filters,
+      unit_kerja: {
+        nama: {
+          contains: userData.nama,
+        },
+      },
+    },
+    orderBy: {
+      nama: 'asc',
     },
     select: {
       id: true,
       nama: true,
       nip: true,
       status_kepegawaian: true,
+      unit_kerja: {
+        select: {
+          nama: true,
+        },
+      },
       titles: {
         select: {
           jabatan: true,
-          unit_kerja: true,
         },
         orderBy: {
           createdAt: 'desc',
@@ -26,15 +72,90 @@ const findAllUsers = async () => {
         take: 1,
       },
     },
+    take: size,
     skip,
-    take: perPage,
+  });
+
+  const totalItems = await prisma.user.count({
+    where: {
+      role: 'USER',
+      AND: filters,
+    },
   });
 
   return {
     users,
-    page,
-    totalItem: skip,
+    page: userData.page,
+    total_item: totalItems,
+    total_page: Math.ceil(totalItems / size),
+  };
+};
 
+const findChart = async () => {
+  const totalUsers = await prisma.user.count({
+    where: {
+      role: 'USER',
+    },
+  });
+  const jumlahLakiLaki = await prisma.user.count({
+    where: {
+      role: 'USER',
+      profile: {
+        jenis_kelamin: 'Laki_Laki',
+      },
+    },
+  });
+
+  const jumlahPerempuan = await prisma.user.count({
+    where: {
+      role: 'USER',
+      profile: {
+        jenis_kelamin: 'Perempuan',
+      },
+    },
+  });
+
+  const ChartSD = await prisma.user.count({
+    where: {
+      unit_kerja: {
+        nama: {
+          startsWith: 'SD',
+        },
+      },
+    },
+  });
+  const ChartSMP = await prisma.user.count({
+    where: {
+      unit_kerja: {
+        nama: {
+          startsWith: 'SMP',
+        },
+      },
+    },
+  });
+  const CharTSMA = await prisma.user.count({
+    where: {
+      unit_kerja: {
+        nama: {
+          startsWith: 'SMA',
+        },
+      },
+    },
+  });
+
+  const persentaseLakiLaki = (jumlahLakiLaki / totalUsers) * 100;
+  const persentasePerempuan = (jumlahPerempuan / totalUsers) * 100;
+
+  return {
+    Jenis_Kelamin: {
+      laki_laki: persentaseLakiLaki,
+      perempuan: persentasePerempuan,
+    },
+    Unit_Kerja: {
+      SD: ChartSD,
+      SMP: ChartSMP,
+      SMA: CharTSMA,
+    },
   };
 };
 
@@ -47,19 +168,30 @@ const findUserById = async (id) => {
       id: true,
       nama: true,
       nip: true,
+      email: true,
       status_kepegawaian: true,
+      unit_kerja: {
+        select: {
+          nama: true,
+        },
+      },
       profile: {
         select: {
+          alamat: true,
           tempat_lahir: true,
           tanggal_lahir: true,
           jenis_kelamin: true,
+          nomor_telepon: true,
           agama: true,
         },
       },
       titles: {
         select: {
           jabatan: true,
-          unit_kerja: true,
+        },
+        take: 1,
+        orderBy: {
+          tmt: 'desc',
         },
       },
     },
@@ -77,10 +209,29 @@ const insertUser = async (userData) => {
       status_kepegawaian: userData.status_kepegawaian,
       password: hashPassword,
       // role: userData.role,
+      unit_kerja_id: userData.unit_kerja_id,
       img_url: userData.img_url,
       profile: {
         create: {
           user_id: userData.id,
+        },
+      },
+    },
+    select: {
+      id: true,
+      nama: true,
+      nip: true,
+      email: true,
+      status_kepegawaian: true,
+      unit_kerja: {
+        select: {
+          nama: true,
+        },
+      },
+      img_url: true,
+      profile: {
+        select: {
+          user_id: true,
         },
       },
     },
@@ -249,4 +400,5 @@ export {
   deleteUser,
   editUser,
   userDashboard,
+  findChart,
 };

@@ -4,9 +4,11 @@ import {
   deleteUser,
   editUser,
   findAllUsers,
+  findChart,
   findUserById,
   findUserByNIP,
-  findUserCurrent, insertUser,
+  findUserCurrent,
+  insertUser,
   updateTokenUserByNIP,
   userDashboard,
 } from './user.repository.js';
@@ -15,12 +17,15 @@ import {
   registerValidation,
   loginValidation,
   getUserValidation,
+  filterValidation,
 } from '../validation/user-validation.js';
 import ResponseError from '../utils/response-error.js';
 import { uploadImage } from '../utils/upload-file.js';
+import { ChartEducation } from '../education/education.repository.js';
 
-const getAllUsers = async () => {
-  const users = await findAllUsers();
+const getAllUsers = async (userData) => {
+  const searchValidation = await validate(filterValidation, userData);
+  const users = await findAllUsers(searchValidation);
 
   return users;
 };
@@ -109,6 +114,15 @@ const getUserDashboard = async (nip) => {
   return user;
 };
 
+const getChart = async () => {
+  const educationChart = await ChartEducation();
+  const userChart = await findChart();
+  return {
+    userChart,
+    educationChart,
+  };
+};
+
 export {
   getAllUsers,
   getDetailUser,
@@ -119,4 +133,5 @@ export {
   deleteUserById,
   updateUser,
   getUserDashboard,
+  getChart,
 };
