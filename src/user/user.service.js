@@ -2,10 +2,12 @@ import bcrypt from 'bcrypt';
 import {
   deleteToken,
   deleteUser,
+  editPasswordUser,
   editUser,
   editUserByAdmin,
   findAllUsers,
   findChart,
+  findPasswordUser,
   findUserById,
   findUserByNIP,
   findUserCurrent,
@@ -21,6 +23,7 @@ import {
   filterValidation,
   upadateUserValidation,
   upadateByUserValidation,
+  updatePasswordValidation,
 } from '../validation/user-validation.js';
 import ResponseError from '../utils/response-error.js';
 import { uploadImage } from '../utils/upload-file.js';
@@ -70,7 +73,7 @@ const loginUser = async (userData) => {
 
   const comparePassword = await bcrypt.compare(userValidation.password, user.password);
   if (!comparePassword) {
-    throw new ResponseError(401, 'Username or Password wrong.');
+    throw new ResponseError(401, 'NIP or Password wrong.');
   }
 
   const updateToken = await updateTokenUserByNIP(user, user.nip);
@@ -145,6 +148,29 @@ const updateUserByAdmin = async (id, userData) => {
   return user;
 };
 
+const updatePasswordUser = async (id, userData) => {
+  const userById = await findUserById(id);
+  if (!userById) {
+    throw new ResponseError(404, 'User not found');
+  }
+  const userPassword = await findPasswordUser(id);
+
+  const userValidation = await validate(updatePasswordValidation, userData);
+
+  const comparePassword = await bcrypt.compare(userValidation.oldPassword, userPassword.password);
+  if (!comparePassword) {
+    throw new ResponseError(400, 'Old Password wrong.');
+  }
+
+  const user = await editPasswordUser(id, userValidation);
+
+  if (user) {
+    const logout = await deleteToken(user.nip);
+    return logout;
+  }
+  return user;
+};
+
 export {
   getAllUsers,
   getDetailUser,
@@ -157,4 +183,5 @@ export {
   getUserDashboard,
   getChart,
   updateUserByAdmin,
+  updatePasswordUser,
 };

@@ -198,6 +198,14 @@ const findUserById = async (id) => {
   });
   return user;
 };
+const findPasswordUser = async (id) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id,
+    },
+  });
+  return user;
+};
 
 const insertUser = async (userData) => {
   const hashPassword = await bcrypt.hash(userData.password, 10);
@@ -416,17 +424,32 @@ const editUserByAdmin = async (id, userData) => {
   return user;
 };
 
+const editPasswordUser = async (id, userData) => {
+  const hashPassword = await bcrypt.hash(userData.password, 10);
+  const user = await prisma.user.update({
+    where: {
+      id,
+    },
+    data: {
+      password: hashPassword,
+    },
+  });
+  return user;
+};
+
 export {
   findAllUsers,
   findUserById,
   findUserByNIP,
-  insertUser,
   findUserCurrent,
+  findPasswordUser,
+  findChart,
+  insertUser,
   updateTokenUserByNIP,
   deleteToken,
   deleteUser,
   editUser,
   userDashboard,
-  findChart,
   editUserByAdmin,
+  editPasswordUser,
 };
